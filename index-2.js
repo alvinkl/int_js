@@ -1,4 +1,5 @@
 var html;
+var current_form = $();
 $(document).ready(function() {
 	var iframe = $('#preview-mce');
 	var iframe_content = iframe.contents().find('#content-iframe');
@@ -134,7 +135,7 @@ function compileHTML(type) {
 		buttons: '',
 		footnote: '',
 	};
-
+	console.log(html);
 	return function(newHTML) {
 		html = Object.assign({}, html, newHTML);
 
@@ -180,7 +181,6 @@ function compileHTML(type) {
 		}
 
 		var render_content_images = '';
-		console.log(html.content_images.length);
 		if (html.content_images.length) {
 			render_content_images = html.content_images
 				.map(img => `<img src="${img}"/>`)
@@ -249,33 +249,105 @@ function setupGeneral() {
 		var option = $(this).find('option:selected');
 		var value = option.val();
 		$('.forms-tgl').fadeOut();
+
 		switch (value) {
 			case '1':
-				$('#foryou-form').fadeIn();
+				current_form = $('#foryou-form');
 				setUploadedImage('foryou');
 				html = compileHTML('For You');
 				break;
 			case '2':
-				$('#promo-form').fadeIn();
-				setUploadedImage('promo');
-				html = compileHTML('Promo');
+				current_form = $('#promo-form');
 				setupPromoForm();
 				break;
 			case '3':
-				$('#insight-form').fadeIn();
+				current_form = $('#insight-form');
 				setUploadedImage('insight');
-				html = compileHTML('For You');
+				html = compileHTML('Insight');
 				break;
 			case '4':
-				$('#featured-form').fadeIn();
+				current_form = $('#featured-form');
 				html = compileHTML('Featured');
 				break;
 			case '5':
-				$('#event-form').fadeIn();
+				current_form = $('#event-form');
 				html = compileHTML('Event');
+				break;
 		}
 		html(clearHTML);
+		current_form.fadeIn();
 	});
+}
+
+function processButton(type, component) {
+	switch (type) {
+		case '1':
+			var button_text = component
+				.parent()
+				.find('.btn-input-text')
+				.val();
+			return `
+				<div class="pl-20 pr-20 clearfix text-center">
+					<button class="btn btn-action btn-medium mt-5 ml-10 mb-15">${button_text}</button>
+				</div>
+			`;
+		case '2':
+			var button_text = component
+				.parent()
+				.find('.btn-input-text')
+				.val();
+			return `
+				<div class="pl-20 pr-20 clearfix text-center">
+					<button class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text}</button>
+				</div>
+			`;
+		case '3':
+			var button_text = [
+				component
+					.parent()
+					.find('.btn-input-text')
+					.eq(0)
+					.val(),
+				component
+					.parent()
+					.find('.btn-input-text')
+					.eq(1)
+					.val(),
+			];
+			return `
+				<div class="pl-20 pr-20 clearfix text-center">
+					<button class="btn btn-action btn-medium mt-5 mb-15">${button_text[0]}</button>
+					<button class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text[1]}</button>
+				</div>
+			`;
+		case '4':
+			var button_text = [
+				component
+					.parent()
+					.find('.btn-input-text')
+					.eq(0)
+					.val(),
+				component
+					.parent()
+					.find('.btn-input-text')
+					.eq(1)
+					.val(),
+				component
+					.parent()
+					.find('.btn-input-text')
+					.eq(2)
+					.val(),
+			];
+			return `
+				<div class="row-fluid btn-list-wrapper">
+                    <button class="btn btn-second">${button_text[0]}</button>
+                    <button class="btn btn-second">${button_text[1]}</button>
+                    <button class="btn btn-second">${button_text[2]}</button>
+				</div>
+			`;
+		default:
+			return '';
+	}
 }
 
 function setupPreview() {
@@ -284,91 +356,23 @@ function setupPreview() {
 	var iframe_content = iframe.contents().find('#content-iframe');
 	$('#preview').on('click', function(e) {
 		e.preventDefault();
-		var buttons_type = $('#buttons-radio input:radio:checked').val();
+		var buttons_type = current_form
+			.find('.buttons-radio input:radio:checked')
+			.val();
 
-		var current_button = $('#buttons-radio input:radio').eq(
-			buttons_type - 1
-		);
+		var current_button = current_form
+			.find('.buttons-radio input:radio')
+			.eq(buttons_type - 1);
 
-		if (buttons_type == 1) {
-			var button_text = current_button
-				.parent()
-				.find('.btn-input-text')
-				.val();
-			var buttons = `
-				<div class="pl-20 pr-20 clearfix text-center">
-					<button class="btn btn-action btn-medium mt-5 ml-10 mb-15">${button_text}</button>
-				</div>
-			`;
-			iframe_content.html(html({ buttons }));
-		} else if (buttons_type == 2) {
-			var button_text = current_button
-				.parent()
-				.find('.btn-input-text')
-				.val();
-
-			var buttons = `
-				<div class="pl-20 pr-20 clearfix text-center">
-					<button class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text}</button>
-				</div>
-			`;
-			iframe_content.html(html({ buttons }));
-		} else if (buttons_type == 3) {
-			var button_text = [
-				current_button
-					.parent()
-					.find('.btn-input-text')
-					.eq(0)
-					.val(),
-				current_button
-					.parent()
-					.find('.btn-input-text')
-					.eq(1)
-					.val(),
-			];
-			var buttons = `
-				<div class="pl-20 pr-20 clearfix text-center">
-					<button class="btn btn-action btn-medium mt-5 mb-15">${button_text[0]}</button>
-					<button class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text[1]}</button>
-				</div>
-			`;
-
-			iframe_content.html(html({ buttons }));
-		} else if (buttons_type == 4) {
-			var button_text = [
-				current_button
-					.parent()
-					.find('.btn-input-text')
-					.eq(0)
-					.val(),
-				current_button
-					.parent()
-					.find('.btn-input-text')
-					.eq(1)
-					.val(),
-				current_button
-					.parent()
-					.find('.btn-input-text')
-					.eq(2)
-					.val(),
-			];
-
-			var buttons = `
-				<div class="row-fluid btn-list-wrapper">
-                    <button class="btn btn-second">${button_text[0]}</button>
-                    <button class="btn btn-second">${button_text[1]}</button>
-                    <button class="btn btn-second">${button_text[2]}</button>
-				</div>
-			`;
-
-			iframe_content.html(html({ buttons }));
-		} else {
-			iframe_content.html(html({ buttons: '' }));
-		}
+		var buttons = processButton(buttons_type, current_button);
+		setIframeContent(iframe_content, html({ buttons }));
 	});
 }
 
 function setupPromoForm() {
+	setUploadedImage('promo');
+	html = compileHTML('Promo');
+
 	var iframe = $('#preview-mce');
 	var iframe_content = iframe.contents().find('#content-iframe');
 
@@ -389,5 +393,12 @@ function setupPromoForm() {
 }
 
 function setIframeContent(component, html) {
-	component.html(html.replace('%date_time%, '))
+	var date_format = {
+		day: 'numeric',
+		month: 'short',
+	};
+
+	var today = new Date();
+	today = today.toLocaleDateString('id-ID', date_format);
+	component.html(html.replace('%date_time%', today));
 }
