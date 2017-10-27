@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Intools Sellerinfo</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <form action="" class="mt-5">
+            <div class="row form-group">
+                <div class="col-5">
+                    <label for="section_type_select">Section Type</label>
+                </div>
+                <div class="col-7">
+                    <select name="section_type_select" id="section_type_select" class="form-control">
+                        <option value="1">For You</option>
+                        <option value="2">Promo</option>
+                        <option value="3">Insight</option>
+                        <option value="4">Featured Update</option>
+                        <option value="5">Event</option>
+                    </select>
+                </div>
+            </div>
+            <!-- FORM FOR PROMO -->
+            <div class="row form-group">
+                <div class="col-5">
+                    <label for="">Banner Image Dekstop</label>
+                </div>
+                <div class="col-7">
+                    <label for="image-selector-desktop" class="btn btn-primary">
+                        <input type="file" id="image-selector-desktop" style="display:none" /> Upload
+                    </label>
+                </div>
+
+            </div>
+            <div class="row form-group">
+                <div class="col-5">
+                    <label for="">Banner Image Mobile</label>
+                </div>
+                <div class="col-7">
+                    <label for="image-selector-mobile" class="btn btn-primary">
+                        <input type="file" id="image-selector-mobile" style="display:none" /> Upload
+                    </label>
+                </div>
+
+            </div>
+            <label for="">Content</label>
+            <div class="row mb-2">
+                <div class="col-5">
+                    <label for="component">Component</label>
+                </div>
+                <div class="col-7">
+                    <label for="">Template</label>
+                    <div class="row">
+                        <div class="col-4">
+                            <button class="btn btn-primary template-component" name='promo'>Promo Template</button>
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-primary template-component" name='event'>Event Template</button>
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-primary template-component" name='insight'>Insight Template</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col-5">
+                </div>
+                <div class="col-7">
+                    <label for="">Buttons</label>
+                    <div class="row">
+                        <div class="col-4">
+                            <button class="btn btn-primary button-component" name='action'>Action Button</button>
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-primary button-component" name='second'>Secondary Button</button>
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-primary button-component" name='promo'>Promo Code</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-6 col-md-4">
+                    <iframe id="preview-mce" frameborder="0"></iframe>
+                </div>
+                <div class="col-xs-6 col-md-8">
+                    <div class="wysiwig" id="mce"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <button class='btn btn-primary' id='preview'>Preview</button>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
+    <script src="./tinymce/js/tinymce/jquery.tinymce.min.js"></script>
+    <script src="./tinymce/js/tinymce/tinymce.min.js"></script>
+    <script src="./index.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+textarea {
+	resize: none;
+}
+
+p {
+	font-size: 30px;
+	color: blue;
+}
+
+#preview-mce {
+	overflow-x: hidden;
+	overflow-y: auto;
+	border: 1px solid black;
+	height: 1024px;
+	width: 800px;
+	pointer-events: visible;
+}
+
+.btn-preview-input-action {
+	background: none !important;
+	border: none !important;
+	box-shadow: none !important;
+	text-align: center !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	width: auto !important;
+	color: white !important;
+	font-weight: 600;
+}
+
+.btn-preview-input-secondary {
+	background: none !important;
+	border: none !important;
+	box-shadow: none !important;
+	text-align: center !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	width: auto !important;
+	color: rgba(0, 0, 0, 0.54) !important;
+	font-weight: 600;
+}
