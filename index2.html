@@ -25,6 +25,7 @@
                 </div>
                 <div class="col-7">
                     <select name="section_type_select" id="section_type_select" class="form-control">
+                        <option value="0">Choose Type</option>
                         <option value="1">For You</option>
                         <option value="2">Promo</option>
                         <option value="3">Insight</option>
@@ -40,7 +41,10 @@
                         <label for="">Banner Image Dekstop</label>
                     </div>
                     <div class="col-7">
+                        <div>
                             <input type="file" id="image-selector-desktop-promo" />
+                            <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
+                        </div>
                     </div>
 
                 </div>
@@ -49,7 +53,7 @@
                         <label for="">Title</label>
                     </div>
                     <div class="col-7">
-                        <input type="text" id="title-inp" class="form-control" />
+                        <input type="text" class="form-control title-inp" />
                     </div>
                 </div>
                 <div class="row">
@@ -66,9 +70,6 @@
                         <div class="images-row">
                                 <input type="file" class="image-selector-content" />
                         </div>
-                        <!-- <label for="add-more-image" class="btn btn-green">
-                            <input type="button" id="add-more-image" style="display:none" /> +
-                        </label> -->
                     </div>
                 </div>
                 <div class="row form-group">
@@ -191,7 +192,10 @@
                         <label for="">Banner Image Dekstop</label>
                     </div>
                     <div class="col-7">
+                        <div>
                             <input type="file" id="image-selector-desktop-insight" />
+                            <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
+                        </div>
                     </div>
 
                 </div>
@@ -201,7 +205,7 @@
                         <label for="">Title</label>
                     </div>
                     <div class="col-7">
-                        <input type="text" id="title-inp" class="form-control" />
+                        <input type="text" class="form-control title-inp" />
                     </div>
                 </div>
 
@@ -219,12 +223,9 @@
                         <div class="images-row">
                                 <input type="file" class="image-selector-content" />
                         </div>
-                        <!-- <label for="add-more-image" class="btn btn-green">
-                            <input type="button" id="add-more-image" style="display:none" /> +
-                        </label> -->
                     </div>
                 </div>
-                
+
                 <div class="row form-group">
                     <div class="col-5">
                         <label for="">Foot Note</label>
@@ -330,7 +331,445 @@
             </div>
             <!-- END OF INSIGHT -->
 
-            <button class='btn btn-primary' id='preview' data-toggle="modal" data-target=".bd-example-modal-lg">Preview</button>
+            <!-- FORM FOR FOR YOU -->
+            <div id="foryou-form" style="display:none" class="forms-tgl">
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Banner Image Dekstop</label>
+                    </div>
+                    <div class="col-7">
+                        <div>
+                            <input type="file" id="image-selector-desktop-foryou" />
+                            <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Title</label>
+                    </div>
+                    <div class="col-7">
+                        <input type="text" class="form-control title-inp" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="">Content</label>
+                        <div class="wysiwig" id="mce"></div>
+                    </div>
+                </div>
+                <div class="row form-group mt-2">
+                    <div class="col-5">
+                        <label for="">Content Images</label>
+                    </div>
+                    <div class="col-7">
+                        <div class="images-row">
+                                <input type="file" class="image-selector-content" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Foot Note</label>
+                    </div>
+                    <div class="col-7">
+                        <div class="wysiwig-footnote" id="ftn"></div>
+                    </div>
+                </div>
+                <div class="form-group buttons-radio">
+                    <label for="">Buttons</label>
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="1">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                <label class="btn btn-action btn-medium mt-5 mb-15">
+                                    <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-action btn-input-text" value="Upgrade Ke Gold Merchant"
+                                    />
+                                </label>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="2">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="3">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-10">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="btn btn-action btn-medium mt-5 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-action btn-input-text" value="Upgrade Ke Gold Merchant"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="4">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Lihat Event Seller"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Kalendar Event"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Ajukan Event"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="5" checked="checked">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                No buttons
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- END OF FOR YOU -->
+
+            <!-- FORM FOR FEATURED -->
+            <div id="featured-form" style="display:none" class="forms-tgl">
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Banner Image Dekstop</label>
+                    </div>
+                    <div class="col-7">
+                        <div>
+                            <input type="file" id="image-selector-desktop-featured" />
+                            <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Title</label>
+                    </div>
+                    <div class="col-7">
+                        <input type="text" class="form-control title-inp" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="">Content</label>
+                        <div class="wysiwig" id="mce"></div>
+                    </div>
+                </div>
+                <div class="row form-group mt-2">
+                    <div class="col-5">
+                        <label for="">Content Images</label>
+                    </div>
+                    <div class="col-7">
+                        <div class="images-row">
+                                <input type="file" class="image-selector-content" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Foot Note</label>
+                    </div>
+                    <div class="col-7">
+                        <div class="wysiwig-footnote" id="ftn"></div>
+                    </div>
+                </div>
+                <div class="form-group buttons-radio">
+                    <label for="">Buttons</label>
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="1">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                <label class="btn btn-action btn-medium mt-5 mb-15">
+                                    <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-action btn-input-text" value="Upgrade Ke Gold Merchant"
+                                    />
+                                </label>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="2">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="3">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-10">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="btn btn-action btn-medium mt-5 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-action btn-input-text" value="Upgrade Ke Gold Merchant"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="4">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Lihat Event Seller"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Kalendar Event"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Ajukan Event"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="5" checked="checked">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                No buttons
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- END OF FEATURED -->
+
+            <!-- FORM FOR EVENT -->
+            <div id="event-form" style="display:none" class="forms-tgl">
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Banner Image Dekstop</label>
+                    </div>
+                    <div class="col-7">
+                        <div>
+                            <input type="file" id="image-selector-desktop-event" />
+                            <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Title</label>
+                    </div>
+                    <div class="col-7">
+                        <input type="text" class="form-control title-inp" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="">Content</label>
+                        <div class="wysiwig" id="mce"></div>
+                    </div>
+                </div>
+                <div class="row form-group mt-2">
+                    <div class="col-5">
+                        <label for="">Content Images</label>
+                    </div>
+                    <div class="col-7">
+                        <div class="images-row">
+                                <input type="file" class="image-selector-content" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Foot Note</label>
+                    </div>
+                    <div class="col-7">
+                        <div class="wysiwig-footnote" id="ftn"></div>
+                    </div>
+                </div>
+                <div class="form-group buttons-radio">
+                    <label for="">Buttons</label>
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="1">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                <label class="btn btn-action btn-medium mt-5 mb-15">
+                                    <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-action btn-input-text" value="Upgrade Ke Gold Merchant"
+                                    />
+                                </label>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="2">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="3">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-10">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="btn btn-action btn-medium mt-5 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-action btn-input-text" value="Upgrade Ke Gold Merchant"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="4">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Lihat Event Seller"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Kalendar Event"
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Ajukan Event"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="5" checked="checked">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                No buttons
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- END OF EVENT -->
+
+            <button class='btn btn-primary input-block-level' id='preview' data-toggle="modal" data-target=".bd-example-modal-lg">Preview</button>
 
             <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
