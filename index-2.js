@@ -1,91 +1,93 @@
-var html_editing = {};
-var html;
-var current_form = $();
+(function() {
+	var html_editing = { content_images: [] };
+	var html;
+	var current_form = $('#form-input');
 
-$(document).ready(function() {
-	var iframe = $('#preview-mce');
-	var iframe_content = iframe.contents().find('#content-iframe');
+	$(document).ready(function() {
+		var iframe = $('#preview-mce');
+		var iframe_content = iframe.contents().find('#content-iframe');
 
-	setupGeneral();
-	setupPreview();
-	setupTinyMCE();
-});
+		setupGeneral();
+		setupPreview();
+		setupTinyMCE();
+		setupImageUplaoder();
+	});
 
-function setupTinyMCE() {
-	var tinymce_view = {
-			toolbar: [
-				'bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | link',
-			],
+	function setupTinyMCE() {
+		var tinymce_view = {
+				toolbar: [
+					'bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | link',
+				],
 
-			plugins: ['link', 'preview'],
-			menubar: '',
-		},
-		tinymce_settings = {
-			selector: '.wysiwig',
-			height: '400px',
+				plugins: ['link', 'preview'],
+				menubar: '',
+			},
+			tinymce_settings = {
+				selector: '.wysiwig',
+				height: '400px',
+				resize: false,
+				visual: false,
+				setup: tinyMceSetup,
+			};
+		var tinymce_settings_2 = {
+			selector: '.wysiwig-footnote',
+			height: '100px',
 			resize: false,
 			visual: false,
-			setup: tinyMceSetup,
+			setup: tinyMceFootnoteSetup,
 		};
-	var tinymce_settings_2 = {
-		selector: '.wysiwig-footnote',
-		height: '100px',
-		resize: false,
-		visual: false,
-		setup: tinyMceFootnoteSetup,
-	};
 
-	function tinyMceSetup(editor) {
-		var iframe = $('#preview-mce');
-		var iframe_content = iframe.contents().find('#content-iframe');
+		function tinyMceSetup(editor) {
+			var iframe = $('#preview-mce');
+			var iframe_content = iframe.contents().find('#content-iframe');
 
-		editor.on('keyup', function() {
-			var content = tinymce.activeEditor.getContent();
-			html_editing = Object.assign({}, html_editing, { content });
-		});
-		editor.on('change', function() {
-			var content = tinymce.activeEditor.getContent();
-			html_editing = Object.assign({}, html_editing, { content });
-		});
+			editor.on('keyup', function() {
+				var content = tinymce.activeEditor.getContent();
+				html_editing = Object.assign({}, html_editing, { content });
+			});
+			editor.on('change', function() {
+				var content = tinymce.activeEditor.getContent();
+				html_editing = Object.assign({}, html_editing, { content });
+			});
+		}
+
+		function tinyMceFootnoteSetup(editor) {
+			var iframe = $('#preview-mce');
+			var iframe_content = iframe.contents().find('#content-iframe');
+
+			editor.on('keyup', function() {
+				var footnote = tinymce.activeEditor.getContent();
+				html_editing = Object.assign({}, html_editing, { footnote });
+			});
+			editor.on('change', function() {
+				var footnote = tinymce.activeEditor.getContent();
+				html_editing = Object.assign({}, html_editing, { footnote });
+			});
+		}
+
+		tinymce.init(Object.assign({}, tinymce_view, tinymce_settings));
+		tinymce.init(Object.assign({}, tinymce_view, tinymce_settings_2));
 	}
 
-	function tinyMceFootnoteSetup(editor) {
+	function setupIframe() {
 		var iframe = $('#preview-mce');
-		var iframe_content = iframe.contents().find('#content-iframe');
+		var iframe_content = iframe.contents();
+		var addCSS = function(href) {
+			iframe_content.find('head').append(
+				$('<link />', {
+					rel: 'stylesheet',
+					href,
+					type: 'text/css',
+				})
+			);
+		};
 
-		editor.on('keyup', function() {
-			var footnote = tinymce.activeEditor.getContent();
-			html_editing = Object.assign({}, html_editing, { footnote });
-		});
-		editor.on('change', function() {
-			var footnote = tinymce.activeEditor.getContent();
-			html_editing = Object.assign({}, html_editing, { footnote });
-		});
-	}
+		addCSS('./preview.css');
+		addCSS('http://ak-alvin.ndvl/css/dv3-bootstrap-short.css');
+		addCSS('http://ak-alvin.ndvl/css/dv3-global-short.css');
+		addCSS('http://ak-alvin.ndvl/css/dv3-new-button.css');
 
-	tinymce.init(Object.assign({}, tinymce_view, tinymce_settings));
-	tinymce.init(Object.assign({}, tinymce_view, tinymce_settings_2));
-}
-
-function setupIframe() {
-	var iframe = $('#preview-mce');
-	var iframe_content = iframe.contents();
-	var addCSS = function(href) {
-		iframe_content.find('head').append(
-			$('<link />', {
-				rel: 'stylesheet',
-				href,
-				type: 'text/css',
-			})
-		);
-	};
-
-	addCSS('./preview.css');
-	addCSS('http://ak-alvin.ndvl/css/dv3-bootstrap-short.css');
-	addCSS('http://ak-alvin.ndvl/css/dv3-global-short.css');
-	addCSS('http://ak-alvin.ndvl/css/dv3-new-button.css');
-
-	iframe_content.find('body').html(`
+		iframe_content.find('body').html(`
         <div class="maincontent-admin maincontent-admin--transparent">
             <h3 class="fs-16 fw-600 mt-5">Info Penjual</h3>
             <div class="maincontent-container">
@@ -99,54 +101,54 @@ function setupIframe() {
             </div>
         </div>
     `);
-}
+	}
 
-var clearHTML = (function() {
-	return {
-		banner: {
-			desktop: '',
-			mobile: '',
-		},
-		title: '',
-		content: '',
-		content_images: [],
-		promo_code: '',
-		buttons: '',
-		footnote: '',
-	};
-})();
+	var clearHTML = (function() {
+		return {
+			banner: {
+				desktop: '',
+				mobile: '',
+			},
+			title: '',
+			content: '',
+			content_images: [],
+			promo_code: '',
+			buttons: '',
+			footnote: '',
+		};
+	})();
 
-function compileHTML(type) {
-	var html = {
-		banner: {
-			desktop: '',
-			mobile: '',
-		},
-		title: '',
-		content: '',
-		content_images: [],
-		promo_code: '',
-		buttons: '',
-		footnote: '',
-	};
+	function compileHTML(type) {
+		var html = {
+			banner: {
+				desktop: '',
+				mobile: '',
+			},
+			title: '',
+			content: '',
+			content_images: [],
+			promo_code: '',
+			buttons: '',
+			footnote: '',
+		};
 
-	return function(newHTML) {
-		html = Object.assign({}, html, newHTML);
+		return function(newHTML) {
+			html = Object.assign({}, html, newHTML);
 
-		var render_promo_code = '';
-		if (html.promo_code.length) {
-			var promo_func = function() {
-				new Clipboard('.copy');
-				$('.copy').on('click', function() {
-					$(this).html(
-						'<i style="color: green">&#10003;</i> Tersalin'
-					);
-				});
-			};
+			var render_promo_code = '';
+			if (html.promo_code.length) {
+				var promo_func = function() {
+					new Clipboard('.copy');
+					$('.copy').on('click', function() {
+						$(this).html(
+							'<i style="color: green">&#10003;</i> Tersalin'
+						);
+					});
+				};
 
-			var render_promo_func = `<script>(${promo_func})()</script>`;
-			var promo_code = html.promo_code.toUpperCase();
-			render_promo_code = `
+				var render_promo_func = `<script>(${promo_func})()</script>`;
+				var promo_code = html.promo_code.toUpperCase();
+				render_promo_code = `
 				<div class="promo-code-wrapper">
 					<h4 class="main-title">Kode Promo</h4>
 					<div>
@@ -159,33 +161,33 @@ function compileHTML(type) {
 				</div>
 				${render_promo_func}
 			`;
-		}
+			}
 
-		var header = '';
+			var header = '';
 
-		if (html.banner.desktop) {
-			header = `
+			if (html.banner.desktop) {
+				header = `
 				<div class="info-top-banner info-top-banner--video relative" style="background-image: url(${html
 					.banner.desktop});">
 				</div>
 				`;
-			// <button type="button" class="btn-see-video btn-see-video--center btn-see-video--white">
-			// 	<img src="https://ecs7.tokopedia.net/img/newtkpd/gold-new/play_btn.png" style="width: 22px;height: 22px;margin-right: 10px;">
-			// 	<span style="vertical-align: middle;font-size: 14px;">Lihat Videonya</span>
-			// </button>
-		}
+				// <button type="button" class="btn-see-video btn-see-video--center btn-see-video--white">
+				// 	<img src="https://ecs7.tokopedia.net/img/newtkpd/gold-new/play_btn.png" style="width: 22px;height: 22px;margin-right: 10px;">
+				// 	<span style="vertical-align: middle;font-size: 14px;">Lihat Videonya</span>
+				// </button>d
+			}
 
-		var render_content_images = '';
-		if (html.content_images.length) {
-			render_content_images = html.content_images
-				.map(img => `<img src="${img}"/>`)
-				.join('');
-		}
+			var render_content_images = '';
+			if (html.content_images.length) {
+				render_content_images = html.content_images
+					.map(img => `<img src="${img}"/>`)
+					.join('');
+			}
 
-		var border_content = html.banner.desktop
-			? 'no-border-top'
-			: 'border-top';
-		var contents = `
+			var border_content = html.banner.desktop
+				? 'no-border-top'
+				: 'border-top';
+			var contents = `
 			<content-header hidden>${JSON.stringify(html.banner)}</content-header>
 			${header}
 			<content>
@@ -220,300 +222,404 @@ function compileHTML(type) {
 			</content>
 		`;
 
-		processEditContent(contents);
-		return contents;
-	};
-}
+			processEditContent(contents);
+			return contents;
+		};
+	}
 
-function setUploadedImage(form) {
-	var show_rem_btn = function() {
-		$('.remove-banner-image')
-			.off()
-			.on('click', function() {
-				$(this)
-					.parent()
-					.find('input')
-					.val('');
+	function setUploadedImage(form) {
+		var show_rem_btn = function() {
+			$('.remove-banner-image')
+				.off()
+				.on('click', function() {
+					$(this)
+						.parent()
+						.find('input')
+						.val('');
+					html_editing = Object.assign({}, html_editing, {
+						banner: { desktop: '' },
+					});
+					$(this).hide();
+				})
+				.show();
+		};
+
+		$('#image-selector-desktop').on('change', function(e) {
+			var src = e.originalEvent.srcElement.files[0];
+			processImageToData(src);
+			show_rem_btn();
+		});
+	}
+
+	function processImageToData(src, type = 0) {
+		var reader = new FileReader();
+
+		reader.onloadend = function() {
+			if (type == 0) {
 				html_editing = Object.assign({}, html_editing, {
-					banner: { desktop: '' },
+					banner: { desktop: reader.result },
 				});
-				$(this).hide();
-			})
-			.show();
-	};
-
-	$('#image-selector-desktop-' + form).on('change', function(e) {
-		var src = e.originalEvent.srcElement.files[0];
-
-		var reader = new FileReader();
-		reader.onloadend = function() {
-			html_editing = Object.assign({}, html_editing, {
-				banner: { desktop: reader.result },
-			});
+			} else {
+				var { content_images } = html_editing;
+				content_images.push(reader.result);
+				html_editing = Object.assign({}, html_editing, {
+					content_images,
+				});
+			}
 		};
 
 		reader.readAsDataURL(src);
+	}
 
-		show_rem_btn();
-	});
-
-	var content_images_inp = [];
-	$('.image-selector-content').on('change', function(e) {
-		var src = e.originalEvent.srcElement.files[0];
-
-		var reader = new FileReader();
-		reader.onloadend = function() {
-			content_images_inp.push(reader.result);
-			html_editing = Object.assign({}, html_editing, {
-				content_images: content_images_inp,
-			});
-		};
-
-		reader.readAsDataURL(src);
-
-		show_rem_btn();
-	});
-}
-
-function setupGeneral() {
-	var remove_tmce = setInterval(function() {
-		tmc = $(
-			'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last'
-		);
-		if (tmc.length) {
-			$(
+	function setupGeneral() {
+		var remove_tmce = setInterval(function() {
+			tmc = $(
 				'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last'
-			).hide();
-			clearInterval(remove_tmce);
-		}
-	});
+			);
+			if (tmc.length) {
+				$(
+					'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last'
+				).hide();
+				clearInterval(remove_tmce);
+			}
+		});
 
-	$('#section_type_select').on('change', function() {
-		var option = $(this).find('option:selected');
-		var value = option.val();
-		$('.forms-tgl').fadeOut();
+		$('#section_type_select').on('change', function() {
+			var option = $(this).find('option:selected');
+			var value = option.val();
 
-		switch (value) {
+			var promo_input = $('.promo-code-form-inp');
+			promo_input
+				.off()
+				.hide()
+				.val('');
+			if (value != 0) current_form.show();
+			switch (value) {
+				case '1':
+					setUploadedImage('foryou');
+					html = compileHTML('For You');
+					break;
+				case '2':
+					setUploadedImage('promo');
+					html = compileHTML('Promo');
+
+					$('#promo-code-inp').on('keyup', function(e) {
+						var promo_code = $(this).val();
+						if (promo_code.length) {
+							html_editing = Object.assign({}, html_editing, {
+								promo_code,
+							});
+						}
+					});
+
+					promo_input.show();
+					break;
+				case '3':
+					setUploadedImage('insight');
+					html = compileHTML('Insight');
+					break;
+				case '4':
+					html = compileHTML('Featured');
+					break;
+				case '5':
+					html = compileHTML('Event');
+					break;
+				default:
+					html(clearHTML);
+					current_form.hide();
+					return;
+			}
+			html_editing = clearHTML;
+
+			current_form
+				.find('.title-inp')
+				.off()
+				.on('keyup', function(e) {
+					var title = $(this).val();
+					html_editing = Object.assign({}, html_editing, { title });
+				});
+		});
+	}
+
+	function processButton(type, component) {
+		switch (type) {
 			case '1':
-				current_form = $('#foryou-form');
-				setUploadedImage('foryou');
-				html = compileHTML('For You');
-				break;
-			case '2':
-				current_form = $('#promo-form');
-				setupPromoForm();
-				break;
-			case '3':
-				current_form = $('#insight-form');
-				setUploadedImage('insight');
-				html = compileHTML('Insight');
-				break;
-			case '4':
-				current_form = $('#featured-form');
-				html = compileHTML('Featured');
-				break;
-			case '5':
-				current_form = $('#event-form');
-				html = compileHTML('Event');
-				break;
-			default:
-				current_form.fadeOut();
-				html(clearHTML);
-				return;
-		}
-		html_editing = clearHTML;
-		current_form.fadeIn();
-
-		current_form
-			.find('.title-inp')
-			.off()
-			.on('keyup', function(e) {
-				var title = $(this).val();
-				html_editing = Object.assign({}, html_editing, { title });
-			});
-	});
-}
-
-function processButton(type, component) {
-	switch (type) {
-		case '1':
-			var button_text = component
-				.parent()
-				.find('.btn-input-text')
-				.val();
-			return `
+				var button_text = component
+					.parent()
+					.find('.btn-input-text')
+					.val();
+				return `
 				<div class="pl-20 pr-20 clearfix text-center">
 					<content-button hidden>{ "type": ${type}, "text": ["${button_text}"] }</content-button>
 					<button class="btn btn-action btn-medium mt-5 ml-10 mb-15">${button_text}</button>
 				</div>
 			`;
-		case '2':
-			var button_text = component
-				.parent()
-				.find('.btn-input-text')
-				.val();
-			return `
+			case '2':
+				var button_text = component
+					.parent()
+					.find('.btn-input-text')
+					.val();
+				return `
 				<div class="pl-20 pr-20 clearfix text-center">
 					<content-button hidden>{ "type": ${type}, "text": ["${button_text}"] }</content-button>
 					<button class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text}</button>
 				</div>
 			`;
-		case '3':
-			var button_text = [
-				component
-					.parent()
-					.find('.btn-input-text')
-					.eq(0)
-					.val(),
-				component
-					.parent()
-					.find('.btn-input-text')
-					.eq(1)
-					.val(),
-			];
-			return `
+			case '3':
+				var button_text = [
+					component
+						.parent()
+						.find('.btn-input-text')
+						.eq(0)
+						.val(),
+					component
+						.parent()
+						.find('.btn-input-text')
+						.eq(1)
+						.val(),
+				];
+				return `
 				<div class="pl-20 pr-20 clearfix text-center">
 					<content-button hidden>{ "type": ${type}, "text": ${JSON.stringify(
-				button_text
-			)} }</content-button>
+					button_text
+				)} }</content-button>
 					<button class="btn btn-action btn-medium mt-5 mb-15">${button_text[0]}</button>
 					<button class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text[1]}</button>
 				</div>
 			`;
-		case '4':
-			var button_text = [
-				component
-					.parent()
-					.find('.btn-input-text')
-					.eq(0)
-					.val(),
-				component
-					.parent()
-					.find('.btn-input-text')
-					.eq(1)
-					.val(),
-				component
-					.parent()
-					.find('.btn-input-text')
-					.eq(2)
-					.val(),
-			];
-			return `
+			case '4':
+				var button_text = [
+					component
+						.parent()
+						.find('.btn-input-text')
+						.eq(0)
+						.val(),
+					component
+						.parent()
+						.find('.btn-input-text')
+						.eq(1)
+						.val(),
+					component
+						.parent()
+						.find('.btn-input-text')
+						.eq(2)
+						.val(),
+				];
+				return `
 				<div class="row-fluid btn-list-wrapper">
 					<content-button hidden>{ "type": ${type}, "text": ${JSON.stringify(
-				button_text
-			)} }</content-button>
+					button_text
+				)} }</content-button>
                     <button class="btn btn-second">${button_text[0]}</button>
                     <button class="btn btn-second">${button_text[1]}</button>
                     <button class="btn btn-second">${button_text[2]}</button>
 				</div>
 			`;
-		default:
-			return '';
-	}
-}
-
-function setupPreview() {
-	setupIframe();
-	var iframe = $('#preview-mce');
-	var iframe_content = iframe.contents().find('#content-iframe');
-	$('#preview').on('click', function(e) {
-		e.preventDefault();
-		var buttons_type = current_form
-			.find('.buttons-radio input:radio:checked')
-			.val();
-
-		var current_button = current_form
-			.find('.buttons-radio input:radio')
-			.eq(buttons_type - 1);
-
-		var buttons = processButton(buttons_type, current_button);
-		html_editing = Object.assign({}, html_editing, { buttons });
-		setIframeContent(iframe_content, html(html_editing));
-	});
-}
-
-function setupPromoForm() {
-	setUploadedImage('promo');
-	html = compileHTML('Promo');
-
-	var iframe = $('#preview-mce');
-	var iframe_content = iframe.contents().find('#content-iframe');
-
-	var promo_code_component = iframe_content.find('.promo-code-wrapper');
-	$('#promo-code-inp').on('keyup', function(e) {
-		var promo_code = $(this).val();
-		if (promo_code.length) {
-			html_editing = Object.assign({}, html_editing, { promo_code });
+			default:
+				return '';
 		}
-	});
-}
+	}
 
-function setIframeContent(component, html) {
-	var date_format = {
-		day: 'numeric',
-		month: 'short',
-	};
+	function setupPreview() {
+		setupIframe();
+		var iframe = $('#preview-mce');
+		var iframe_content = iframe.contents().find('#content-iframe');
+		$('#preview').on('click', function(e) {
+			e.preventDefault();
+			var buttons_type = current_form
+				.find('.buttons-radio input:radio:checked')
+				.val();
 
-	var today = new Date();
-	today = today.toLocaleDateString('id-ID', date_format);
-	component.html(html.replace('%date_time%', today));
-}
+			var current_button = current_form
+				.find('.buttons-radio input:radio')
+				.eq(buttons_type - 1);
 
-function processEditContent(html) {
-	var header_reg = new RegExp(
-			'<content-header hidden>(.+)</content-header>',
-			'i'
-		),
-		header_content = header_reg.exec(html),
-		header_content = header_content ? header_content[1] : '';
+			var buttons = processButton(buttons_type, current_button);
+			html_editing = Object.assign({}, html_editing, { buttons });
+			setIframeContent(iframe_content, html(html_editing));
+		});
+	}
 
-	var title_reg = new RegExp(
-			'<content-title hidden>(.+)</content-title>',
-			'i'
-		),
-		title_content = title_reg.exec(html),
-		title_content = title_content ? title_content[1] : '';
+	function setIframeContent(component, html) {
+		var date_format = {
+			day: 'numeric',
+			month: 'short',
+		};
 
-	var text_reg = new RegExp('<content-text hidden>(.+)</content-text>', 'i'),
-		text_content = text_reg.exec(html),
-		text_content = text_content ? text_content[1] : '';
+		var today = new Date();
+		today = today.toLocaleDateString('id-ID', date_format);
+		component.html(html.replace('%date_time%', today));
+	}
 
-	var promo_reg = new RegExp(
-			'<content-promo hidden>(.+)</content-promo>',
-			'i'
-		),
-		promo_content = promo_reg.exec(html),
-		promo_content = promo_content ? promo_content[1] : '';
+	function processEditContent(html) {
+		var header_reg = new RegExp(
+				'<content-header hidden>(.+)</content-header>',
+				'i'
+			),
+			header_content = header_reg.exec(html),
+			header_content = header_content ? header_content[1] : '';
 
-	var images_reg = new RegExp(
-			'<content-images hidden>(.+)</content-images>',
-			'i'
-		),
-		images_content = images_reg.exec(html),
-		images_content = images_content ? images_content[1] : '';
+		var title_reg = new RegExp(
+				'<content-title hidden>(.+)</content-title>',
+				'i'
+			),
+			title_content = title_reg.exec(html),
+			title_content = title_content ? title_content[1] : '';
 
-	var footnote_reg = new RegExp(
-			'<content-footnote hidden>(.+)</content-footnote>',
-			'i'
-		),
-		footnote_content = footnote_reg.exec(html),
-		footnote_content = footnote_content ? footnote_content[1] : '';
+		var text_reg = new RegExp(
+				'<content-text hidden>(.+)</content-text>',
+				'i'
+			),
+			text_content = text_reg.exec(html),
+			text_content = text_content ? text_content[1] : '';
 
-	var buttons_reg = new RegExp(
-			'<content-button hidden>(.+)</content-button>',
-			'i'
-		),
-		button_content = buttons_reg.exec(html),
-		button_content = button_content ? button_content[1] : '';
+		var promo_reg = new RegExp(
+				'<content-promo hidden>(.+)</content-promo>',
+				'i'
+			),
+			promo_content = promo_reg.exec(html),
+			promo_content = promo_content ? promo_content[1] : '';
 
-	return {
-		header: header_content,
-		title: title_content,
-		text: text_content,
-		promo: promo_content,
-		images: images_content,
-		footnote: footnote_content,
-		buttons: button_content,
-	};
-}
+		var images_reg = new RegExp(
+				'<content-images hidden>(.+)</content-images>',
+				'i'
+			),
+			images_content = images_reg.exec(html),
+			images_content = images_content ? images_content[1] : '';
+
+		var footnote_reg = new RegExp(
+				'<content-footnote hidden>(.+)</content-footnote>',
+				'i'
+			),
+			footnote_content = footnote_reg.exec(html),
+			footnote_content = footnote_content ? footnote_content[1] : '';
+
+		var buttons_reg = new RegExp(
+				'<content-button hidden>(.+)</content-button>',
+				'i'
+			),
+			button_content = buttons_reg.exec(html),
+			button_content = button_content ? button_content[1] : '';
+
+		return {
+			header: header_content,
+			title: title_content,
+			text: text_content,
+			promo: promo_content,
+			images: images_content,
+			footnote: footnote_content,
+			buttons: button_content,
+		};
+	}
+
+	function setupImageUplaoder() {
+		// Change this to the location of your server-side upload handler:
+		var url =
+				window.location.hostname === 'blueimp.github.io'
+					? '//jquery-file-upload.appspot.com/'
+					: 'server/php/',
+			uploadButton = $('<button/>')
+				.addClass('btn btn-primary')
+				.prop('disabled', true)
+				.text('Processing...')
+				.on('click', function() {
+					var $this = $(this),
+						data = $this.data();
+					$this
+						.off('click')
+						.text('Abort')
+						.on('click', function() {
+							$this.remove();
+							data.abort();
+						});
+					data.submit().always(function() {
+						$this.remove();
+					});
+				});
+		$('#fileupload')
+			.fileupload({
+				url: url,
+				dataType: 'json',
+				autoUpload: false,
+				acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+				maxFileSize: 99999000,
+				// Enable image resizing, except for Android and Opera,
+				// which actually support image resizing, but fail to
+				// send Blob objects via XHR requests:
+				disableImageResize: /Android(?!.*Chrome)|Opera/.test(
+					window.navigator.userAgent
+				),
+				previewMaxWidth: 500,
+				previewMaxHeight: 300,
+				previewCrop: false,
+			})
+			.on('fileuploadadd', function(e, data) {
+				processImageToData(data.originalFiles[0], 1);
+				data.context = $('<div/>').appendTo('#files');
+				$.each(data.files, function(index, file) {
+					var node = $('<p/>').append($('<span/>').text(file.name));
+					if (!index) {
+						node
+							.append('<br>')
+							.append(uploadButton.clone(true).data(data));
+					}
+					node.appendTo(data.context);
+				});
+			})
+			.on('fileuploadprocessalways', function(e, data) {
+				var index = data.index,
+					file = data.files[index],
+					node = $(data.context.children()[index]);
+				if (file.preview) {
+					node.prepend('<br>').prepend(file.preview);
+				}
+				if (file.error) {
+					node
+						.append('<br>')
+						.append(
+							$('<span class="text-danger"/>').text(file.error)
+						);
+				}
+				if (index + 1 === data.files.length) {
+					data.context
+						.find('button')
+						.text('Upload')
+						.prop('disabled', !!data.files.error);
+				}
+			})
+			.on('fileuploadprogressall', function(e, data) {
+				var progress = parseInt(data.loaded / data.total * 100, 10);
+				$('#progress .progress-bar').css('width', progress + '%');
+			})
+			.on('fileuploaddone', function(e, data) {
+				$.each(data.result.files, function(index, file) {
+					if (file.url) {
+						var link = $('<a>')
+							.attr('target', '_blank')
+							.prop('href', file.url);
+						$(data.context.children()[index]).wrap(link);
+					} else if (file.error) {
+						var error = $('<span class="text-danger"/>').text(
+							file.error
+						);
+						$(data.context.children()[index])
+							.append('<br>')
+							.append(error);
+					}
+				});
+			})
+			.on('fileuploadfail', function(e, data) {
+				$.each(data.files, function(index) {
+					var error = $('<span class="text-danger"/>').text(
+						'File upload failed.'
+					);
+					$(data.context.children()[index])
+						.append('<br>')
+						.append(error);
+				});
+			})
+			.prop('disabled', !$.support.fileInput)
+			.parent()
+			.addClass($.support.fileInput ? undefined : 'disabled');
+	}
+})();

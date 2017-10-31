@@ -2,11 +2,6 @@ textarea {
 	resize: none;
 }
 
-p {
-	font-size: 30px;
-	color: blue;
-}
-
 #preview-mce {
 	overflow-x: hidden;
 	overflow-y: auto;
