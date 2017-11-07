@@ -2,25 +2,13 @@ textarea {
 	resize: none;
 }
 
-p {
-	font-size: 30px;
-	color: blue;
-}
-
 #preview-mce {
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto;
 	border: 1px solid black;
-	height: 1336px;
+	height: 1024px;
 	width: 800px;
-	pointer-events: none;
-
-	-ms-zoom: 0.4;
-	-moz-transform: scale(0.4);
-	-moz-transform-origin: 0 0;
-	-o-transform: scale(0.4);
-	-o-transform-origin: 0 0;
-	-webkit-transform: scale(0.4);
-	-webkit-transform-origin: 0 0;
+	pointer-events: visible;
 }
 
 .btn-preview-input-action {
@@ -45,4 +33,8 @@ p {
 	width: auto !important;
 	color: rgba(0, 0, 0, 0.54) !important;
 	font-weight: 600;
+}
+
+.button-input {
+	width: 200px;
 }
