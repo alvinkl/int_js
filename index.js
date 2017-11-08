@@ -179,15 +179,15 @@
 
 			if (html.banner.url) {
 				header = `
-				<content-header hidden>${JSON.stringify(html.banner.url)}</content-header>
-				<div class="info-top-banner info-top-banner--video relative" style="background-image: url(${html
-					.banner.url});">
-				</div>
+					<content-header hidden>${JSON.stringify(html.banner.url)}</content-header>
+					<div class="info-top-banner info-top-banner--video relative" style="background-image: url(${html
+						.banner.url});">
+					</div>
 				`;
 				// <button type="button" class="btn-see-video btn-see-video--center btn-see-video--white">
 				// 	<img src="https://ecs7.tokopedia.net/img/newtkpd/gold-new/play_btn.png" style="width: 22px;height: 22px;margin-right: 10px;">
 				// 	<span style="vertical-align: middle;font-size: 14px;">Lihat Videonya</span>
-				// </button>d
+				// </button>
 			}
 
 			var render_content_images = '';
@@ -234,7 +234,6 @@
 			</content>
 		`;
 
-			processEditContent(contents);
 			return contents;
 		};
 	}
@@ -363,18 +362,22 @@
 		});
 	}
 
-	function processButton(type, component) {
+	function processButton(type, component, data) {
 		switch (type) {
 			case '1':
 				var button_text = component
-					.parent()
-					.find('.btn-input-text')
-					.val();
+					? component
+							.parent()
+							.find('.btn-input-text')
+							.val()
+					: data.text[0];
 
 				var button_link = component
-					.parent()
-					.find('.btn-input-link')
-					.val();
+					? component
+							.parent()
+							.find('.btn-input-link')
+							.val()
+					: data.link[0];
 
 				var content_btn = {
 					type,
@@ -385,19 +388,23 @@
 				return `
 				<div class="pl-20 pr-20 clearfix text-center">
 					<content-button hidden>${JSON.stringify(content_btn)}</content-button>
-					<a href=${button_link} class="btn btn-action btn-medium mt-5 ml-10 mb-15">${button_text}</a>
+					<a href="${button_link}" class="btn btn-action btn-medium mt-5 ml-10 mb-15">${button_text}</a>
 				</div>
 			`;
 			case '2':
 				var button_text = component
-					.parent()
-					.find('.btn-input-text')
-					.val();
+					? component
+							.parent()
+							.find('.btn-input-text')
+							.val()
+					: data.text[0];
 
 				var button_link = component
-					.parent()
-					.find('.btn-input-link')
-					.val();
+					? component
+							.parent()
+							.find('.btn-input-link')
+							.val()
+					: data.link[0];
 
 				var content_btn = {
 					type,
@@ -408,35 +415,39 @@
 				return `
 				<div class="pl-20 pr-20 clearfix text-center">
 					<content-button hidden>${JSON.stringify(content_btn)}</content-button>
-					<a href=${button_link} class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text}</a>
+					<a href="${button_link}" class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text}</a>
 				</div>
 			`;
 			case '3':
-				var button_text = [
-					component
-						.parent()
-						.find('.btn-input-text')
-						.eq(0)
-						.val(),
-					component
-						.parent()
-						.find('.btn-input-text')
-						.eq(1)
-						.val(),
-				];
+				var button_text = component
+					? [
+							component
+								.parent()
+								.find('.btn-input-text')
+								.eq(0)
+								.val(),
+							component
+								.parent()
+								.find('.btn-input-text')
+								.eq(1)
+								.val(),
+						]
+					: data.text;
 
-				var button_link = [
-					component
-						.parent()
-						.find('.btn-input-link')
-						.eq(0)
-						.val(),
-					component
-						.parent()
-						.find('.btn-input-link')
-						.eq(1)
-						.val(),
-				];
+				var button_link = component
+					? [
+							component
+								.parent()
+								.find('.btn-input-link')
+								.eq(0)
+								.val(),
+							component
+								.parent()
+								.find('.btn-input-link')
+								.eq(1)
+								.val(),
+						]
+					: data.link;
 
 				var content_btn = {
 					type,
@@ -446,46 +457,50 @@
 				return `
 				<div class="pl-20 pr-20 clearfix text-center">
 					<content-button hidden>${JSON.stringify(content_btn)}</content-button>
-					<a href=${button_link[0]} class="btn btn-action btn-medium mt-5 mb-15">${button_text[0]}</a>
-					<a href=${button_link[1]} class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text[1]}</a>
+					<a href="${button_link[0]}" class="btn btn-action btn-medium mt-5 mb-15">${button_text[0]}</a>
+					<a href="${button_link[1]}" class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text[1]}</a>
 				</div>
 			`;
 			case '4':
-				var button_text = [
-					component
-						.parent()
-						.find('.btn-input-text')
-						.eq(0)
-						.val(),
-					component
-						.parent()
-						.find('.btn-input-text')
-						.eq(1)
-						.val(),
-					component
-						.parent()
-						.find('.btn-input-text')
-						.eq(2)
-						.val(),
-				];
+				var button_text = component
+					? [
+							component
+								.parent()
+								.find('.btn-input-text')
+								.eq(0)
+								.val(),
+							component
+								.parent()
+								.find('.btn-input-text')
+								.eq(1)
+								.val(),
+							component
+								.parent()
+								.find('.btn-input-text')
+								.eq(2)
+								.val(),
+						]
+					: data.text;
 
-				var button_link = [
-					component
-						.parent()
-						.find('.btn-input-link')
-						.eq(0)
-						.val(),
-					component
-						.parent()
-						.find('.btn-input-link')
-						.eq(1)
-						.val(),
-					component
-						.parent()
-						.find('.btn-input-link')
-						.eq(2)
-						.val(),
-				];
+				var button_link = component
+					? [
+							component
+								.parent()
+								.find('.btn-input-link')
+								.eq(0)
+								.val(),
+							component
+								.parent()
+								.find('.btn-input-link')
+								.eq(1)
+								.val(),
+							component
+								.parent()
+								.find('.btn-input-link')
+								.eq(2)
+								.val(),
+						]
+					: data.link;
 
 				var content_btn = {
 					type,
@@ -496,9 +511,9 @@
 				return `
 				<div class="row-fluid btn-list-wrapper">
 					<content-button hidden>${JSON.stringify(content_btn)}</content-button>
-                    <button class="btn btn-second">${button_text[0]}</button>
-                    <button class="btn btn-second">${button_text[1]}</button>
-                    <button class="btn btn-second">${button_text[2]}</button>
+                    <a href="${button_link[0]}" class="btn btn-second">${button_text[0]}</a>
+                    <a href="${button_link[1]}" class="btn btn-second">${button_text[1]}</a>
+                    <a href="${button_link[2]}" class="btn btn-second">${button_text[2]}</a>
 				</div>
 			`;
 			default:
@@ -522,6 +537,7 @@
 
 			var buttons = processButton(buttons_type, current_button);
 			html_editing = Object.assign({}, html_editing, { buttons });
+
 			setIframeContent(iframe_content, html(html_editing));
 		});
 	}
@@ -543,7 +559,9 @@
 				'i'
 			),
 			header_content = header_reg.exec(html),
-			header_content = header_content ? header_content[1] : '';
+			header_content = header_content
+				? JSON.parse(header_content[1])
+				: {};
 
 		var title_reg = new RegExp(
 				'<content-title hidden>(.+)</content-title>',
@@ -571,7 +589,9 @@
 				'i'
 			),
 			images_content = images_reg.exec(html),
-			images_content = images_content ? images_content[1] : '';
+			images_content = images_content
+				? JSON.parse(images_content[1])
+				: {};
 
 		var footnote_reg = new RegExp(
 				'<content-footnote hidden>(.+)</content-footnote>',
@@ -585,7 +605,9 @@
 				'i'
 			),
 			button_content = buttons_reg.exec(html),
-			button_content = button_content ? button_content[1] : '';
+			button_content = button_content
+				? JSON.parse(button_content[1])
+				: {};
 
 		return {
 			header: header_content,
@@ -710,6 +732,9 @@
 	}
 
 	function submitUploadImage(src) {
+		/* show progress bar */
+		$('#progress').show();
+
 		var img = src.prop('files')[0];
 
 		var dataUpload = new FormData();
