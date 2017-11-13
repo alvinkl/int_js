@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Intools Sellerinfo</title>
 
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
         crossorigin="anonymous">
     <link rel="stylesheet" href="http://ak-alvin.ndvl/css/dv3-bootstrap-short.css" type="text/css">
@@ -15,6 +16,8 @@
     <link rel="stylesheet" href="jQuery-File-Upload/css/style.css">
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
     <link rel="stylesheet" href="jQuery-File-Upload/css/jquery.fileupload.css">
+    <link rel="stylesheet" href="bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./preview.css" type="text/css">
 </head>
@@ -37,6 +40,32 @@
             </div>
         </div>
         <!-- FORM FOR PROMO -->
+        <div class="row form-group">
+            <div class="col-5">
+                <label for="">Start Time</label>
+            </div>
+            <div class="col-7">
+                <div id="start-date-input" class="input-append date">
+                    <input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
+                    <span class="add-on">
+                      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-5">
+                <label for="">End Time</label>
+            </div>
+            <div class="col-7">
+                <div id="end-date-input" class="input-append date">
+                    <input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
+                    <span class="add-on">
+                      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
         <div id="form-input" class="forms-tgl">
             <div class="row form-group">
                 <div class="col-5">
@@ -57,6 +86,14 @@
                 </div>
                 <div class="col-7">
                     <input type="text" class="form-control title-inp" />
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-5">
+                    <label for="">Short Description</label>
+                </div>
+                <div class="col-7">
+                    <textarea rows="2" class="form-control" id="short-description"></textarea>
                 </div>
             </div>
             <div class="row">
@@ -252,6 +289,8 @@
     <script src="jQuery-File-Upload/js/jquery.fileupload-video.js"></script>
     <!-- The File Upload validation plugin -->
     <script src="jQuery-File-Upload/js/jquery.fileupload-validate.js"></script>
+
+    <script src="bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" charset="utf-8"></script>
 
     <script src="./index.js"></script>
 </body>

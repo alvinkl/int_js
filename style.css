@@ -42,3 +42,9 @@ textarea {
 .btn-input-link {
 	font-size: 12px;
 }
+/*
+input[placeholder],
+[placeholder],
+*[placeholder] {
+	color: white !important;
+}*/

@@ -18,6 +18,96 @@
 		});
 	});
 
+	function setupGeneral() {
+		var remove_tmce = setInterval(function() {
+			tmc = $(
+				'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last'
+			);
+			if (tmc.length) {
+				$(
+					'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last'
+				).hide();
+				clearInterval(remove_tmce);
+			}
+		});
+
+		$('#section_type_select').on('change', function() {
+			var option = $(this).find('option:selected');
+			var value = option.val();
+
+			var promo_input = $('.promo-code-form-inp');
+			promo_input
+				.off()
+				.hide()
+				.val('');
+			if (value != 0) current_form.show();
+			switch (value) {
+				case '1':
+					setUploadedImage('foryou');
+					html = compileHTML('For You');
+					break;
+				case '2':
+					setUploadedImage('promo');
+					html = compileHTML('Promo');
+
+					$('#promo-code-inp').on('keyup', function(e) {
+						var promo_code = $(this).val();
+						if (promo_code.length) {
+							html_editing = Object.assign({}, html_editing, {
+								promo_code,
+							});
+						}
+					});
+
+					promo_input.show();
+					break;
+				case '3':
+					setUploadedImage('insight');
+					html = compileHTML('Insight');
+					break;
+				case '4':
+					html = compileHTML('Featured');
+					break;
+				case '5':
+					html = compileHTML('Event');
+					break;
+				default:
+					html(clearHTML);
+					current_form.hide();
+					return;
+			}
+
+			html_editing = clearHTML;
+
+			/* BEGIN event listeners for input */
+
+			/* title input */
+			current_form
+				.find('.title-inp')
+				.off()
+				.on('keyup', function(e) {
+					var title = $(this).val();
+					html_editing = Object.assign({}, html_editing, { title });
+				});
+
+			/* start and end time input */
+			$('#start-date-input')
+				.datetimepicker({ language: 'en-ID' });
+
+
+			/* END of event listeners for inputs */
+			/* reset radio buttons */
+			current_form.find('input[type=radio]').prop('checked', function() {
+				return this.getAttribute('checked') == 'checked';
+			});
+
+			/* reset all inputs */
+			current_form.find('input[type=text]').val('');
+
+
+		});
+	}
+
 	function setupTinyMCE() {
 		var tinymce_view = {
 				toolbar: [
@@ -292,76 +382,6 @@
 		};
 	}
 
-	function setupGeneral() {
-		var remove_tmce = setInterval(function() {
-			tmc = $(
-				'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last'
-			);
-			if (tmc.length) {
-				$(
-					'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last'
-				).hide();
-				clearInterval(remove_tmce);
-			}
-		});
-
-		$('#section_type_select').on('change', function() {
-			var option = $(this).find('option:selected');
-			var value = option.val();
-
-			var promo_input = $('.promo-code-form-inp');
-			promo_input
-				.off()
-				.hide()
-				.val('');
-			if (value != 0) current_form.show();
-			switch (value) {
-				case '1':
-					setUploadedImage('foryou');
-					html = compileHTML('For You');
-					break;
-				case '2':
-					setUploadedImage('promo');
-					html = compileHTML('Promo');
-
-					$('#promo-code-inp').on('keyup', function(e) {
-						var promo_code = $(this).val();
-						if (promo_code.length) {
-							html_editing = Object.assign({}, html_editing, {
-								promo_code,
-							});
-						}
-					});
-
-					promo_input.show();
-					break;
-				case '3':
-					setUploadedImage('insight');
-					html = compileHTML('Insight');
-					break;
-				case '4':
-					html = compileHTML('Featured');
-					break;
-				case '5':
-					html = compileHTML('Event');
-					break;
-				default:
-					html(clearHTML);
-					current_form.hide();
-					return;
-			}
-			html_editing = clearHTML;
-
-			current_form
-				.find('.title-inp')
-				.off()
-				.on('keyup', function(e) {
-					var title = $(this).val();
-					html_editing = Object.assign({}, html_editing, { title });
-				});
-		});
-	}
-
 	function processButton(type, component, data) {
 		switch (type) {
 			case '1':
@@ -537,6 +557,8 @@
 
 			var buttons = processButton(buttons_type, current_button);
 			html_editing = Object.assign({}, html_editing, { buttons });
+
+			console.log(html_editing);
 
 			setIframeContent(iframe_content, html(html_editing));
 		});
