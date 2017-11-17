@@ -16,66 +16,39 @@
     <link rel="stylesheet" href="jQuery-File-Upload/css/style.css">
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
     <link rel="stylesheet" href="jQuery-File-Upload/css/jquery.fileupload.css">
-    <link rel="stylesheet" href="bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
 
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./preview.css" type="text/css">
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row form-group mt-5">
-            <div class="col-5">
-                <label for="section_type_select">Section Type</label>
-            </div>
-            <div class="col-7">
-                <select name="section_type_select" id="section_type_select" class="form-control">
-                    <option value="0">Choose Section</option>
-                    <option value="1">For You</option>
-                    <option value="2">Promo</option>
-                    <option value="3">Insight</option>
-                    <option value="4">Featured Update</option>
-                    <option value="5">Event</option>
-                </select>
-            </div>
-        </div>
-        <!-- FORM FOR PROMO -->
-        <div class="row form-group">
-            <div class="col-5">
-                <label for="">Start Time</label>
-            </div>
-            <div class="col-7">
-                <div id="start-date-input" class="input-append date">
-                    <input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
-                    <span class="add-on">
-                      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                    </span>
+    <!-- First Page Form -->
+    <div class="form-spec" id="form-spec-1">
+        <div class="container-fluid">
+            <div class="row form-group mt-5">
+                <div class="col-5">
+                    <label for="section_type_select">Section Type</label>
+                </div>
+                <div class="col-7">
+                    <select name="section_type_select" id="section_type_select" class="form-control">
+                        <option value="0">Choose Section</option>
+                        <option value="1">For You</option>
+                        <option value="2">Promo</option>
+                        <option value="3">Insight</option>
+                        <option value="4">Featured Update</option>
+                        <option value="5">Event</option>
+                    </select>
                 </div>
             </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-5">
-                <label for="">End Time</label>
-            </div>
-            <div class="col-7">
-                <div id="end-date-input" class="input-append date">
-                    <input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
-                    <span class="add-on">
-                      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div id="form-input" class="forms-tgl">
             <div class="row form-group">
                 <div class="col-5">
-                    <label for="">Banner Image Dekstop</label>
+                    <label for="">Thumbnail Image</label>
                 </div>
                 <div class="col-7">
                     <div>
-                        <input type="file" id="image-selector-desktop" />
+                        <input type="file" id="image-selector-thumbnail" />
                         <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
-                        <div id="files-banner" class="files"></div>
+                        <div id="files-thumbnail" class="files"></div>
                     </div>
                 </div>
 
@@ -96,179 +69,252 @@
                     <textarea rows="2" class="form-control" id="short-description"></textarea>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <label for="">Content</label>
-                    <div class="wysiwig" id="mce"></div>
-                </div>
-            </div>
-            <div class="row form-group mt-2">
+            <div class="row form-group">
                 <div class="col-5">
-                    <label for="">Content Images</label>
+                    <label for="">Start Time</label>
                 </div>
                 <div class="col-7">
-                    <!-- The fileinput-button span is used to style the file input field as button -->
-                    <span class="btn fileinput-button">
-                        <i class="glyphicon glyphicon-plus"></i>
-                        <span>Add images...</span>
-                        <!-- The file input field used as target for the file upload widget -->
-                        <input id="fileupload" type="file" name="files[]">
-                    </span>
-                    <br>
-                    <br>
-                    <!-- The global progress bar -->
-                    <div id="progress" class="progress" style="display:none;">
-                        <div class="progress-bar progress-bar-success"></div>
+                    <div id="start-date-input" class="input-append date">
+                        <input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
+                        <span class="add-on">
+                          <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        </span>
                     </div>
-                    <!-- The container for the uploaded files -->
-                    <div id="files" class="files"></div>
-                    <br>
-                </div>
-            </div>
-            <div class="row form-group promo-code-form-inp" style="display:none;">
-                <div class="col-5">
-                    <label for="">Promo Code</label>
-                </div>
-                <div class="col-7">
-                    <input type="text" id="promo-code-inp" class="form-control" />
                 </div>
             </div>
             <div class="row form-group">
                 <div class="col-5">
-                    <label for="">Foot Note</label>
+                    <label for="">End Time</label>
                 </div>
                 <div class="col-7">
-                    <div class="wysiwig-footnote" id="ftn"></div>
+                    <div id="end-date-input" class="input-append date">
+                        <input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
+                        <span class="add-on">
+                          <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div class="form-group buttons-radio">
-                <label for="">Buttons</label>
-                <div class="col">
-                    <label class="custom-control custom-radio">
-                        <input id="radio1" name="radio" type="radio" class="custom-control-input" value="1">
-                        <span class="custom-control-indicator"></span>
-                        <span class="custom-control-description ml-5">
-                            <span class="row col-12">
-                                <label class="btn btn-action btn-medium mt-5 mb-15">
-                                    <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-action btn-input-text" value="Upgrade Ke Gold Merchant"
-                                    />
-                                </label>
-                                <input class="btn-input-link" type="text" placeholder="link">
-                            </span>
-                        </span>
-                    </label>
+
+            <div class="row form-group">
+                <div class="col-4"></div>
+                <div class="col-4 row">
+                    <div class="col-6">
+                        <button class="btn btn-danger input-block-level clear-form">Clear</button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-green input-block-level continue-page">Continue</button>
+                    </div>
+                </div>
+                <div class="col-4"></div>
+            </div>
+        </div>
+    </div>
+    <!-- End Of First Page Form -->
+
+    <!-- Form for Content -->
+    <div class="form-spec" id="form-spec-2" style="display: none;">
+        <div class="container-fluid">
+            <div id="form-input" class="forms-tgl">
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Banner Image Dekstop</label>
+                    </div>
+                    <div class="col-7">
+                        <div>
+                            <input type="file" id="image-selector-desktop" />
+                            <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
+                            <div id="files-banner" class="files"></div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="col">
-                    <label class="custom-control custom-radio">
-                        <input id="radio1" name="radio" type="radio" class="custom-control-input" value="2">
-                        <span class="custom-control-indicator"></span>
-                        <span class="custom-control-description">
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
-                                        <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
-                                        />
-                                    </label>
-                                    <input class="ml-10 btn-input-link" type="text" placeholder="link">
-                                </div>
-                            </div>
-                        </span>
-                    </label>
+                <div class="row">
+                    <div class="col">
+                        <label for="">Content</label>
+                        <div class="wysiwig" id="mce"></div>
+                    </div>
                 </div>
-
-                <div class="col">
-                    <label class="custom-control custom-radio">
-                        <input id="radio1" name="radio" type="radio" class="custom-control-input" value="3">
-                        <span class="custom-control-indicator"></span>
-                        <span class="custom-control-description ml-10">
-                            <div class="row">
-                                <div class="col-3">
+                <div class="row form-group mt-2">
+                    <div class="col-5">
+                        <label for="">Content Images</label>
+                    </div>
+                    <div class="col-7">
+                        <!-- The fileinput-button span is used to style the file input field as button -->
+                        <span class="btn fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>Add images...</span>
+                            <!-- The file input field used as target for the file upload widget -->
+                            <input id="fileupload" type="file" name="files[]">
+                        </span>
+                        <br>
+                        <br>
+                        <!-- The global progress bar -->
+                        <div id="progress" class="progress" style="display:none;">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+                        <!-- The container for the uploaded files -->
+                        <div id="files" class="files"></div>
+                        <br>
+                    </div>
+                </div>
+                <div class="row form-group promo-code-form-inp" style="display:none;">
+                    <div class="col-5">
+                        <label for="">Promo Code</label>
+                    </div>
+                    <div class="col-7">
+                        <input type="text" id="promo-code-inp" class="form-control" />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-5">
+                        <label for="">Foot Note</label>
+                    </div>
+                    <div class="col-7">
+                        <div class="wysiwig-footnote" id="ftn"></div>
+                    </div>
+                </div>
+                <div class="form-group buttons-radio">
+                    <label for="">Buttons</label>
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="1">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                <span class="row col-12">
                                     <label class="btn btn-action btn-medium mt-5 mb-15">
                                         <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-action btn-input-text" value="Upgrade Ke Gold Merchant"
                                         />
                                     </label>
                                     <input class="btn-input-link" type="text" placeholder="link">
-                                </div>
-                                <div class="col-3">
-                                    <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
-                                        <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
-                                        />
-                                    </label>
-                                    <input class="ml-10 btn-input-link" type="text" placeholder="link">
-                                </div>
-                            </div>
-                        </span>
-                    </label>
-                </div>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
 
-                <div class="col">
-                    <label class="custom-control custom-radio">
-                        <input id="radio1" name="radio" type="radio" class="custom-control-input" value="4">
-                        <span class="custom-control-indicator"></span>
-                        <span class="custom-control-description ml-5">
-                            <div class="row">
-                                <div class="col-2">
-                                    <div>
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="2">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description">
+                                <div class="row">
+                                    <div class="col-6">
                                         <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
-                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Lihat Event Seller"
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
                                             />
                                         </label>
                                         <input class="ml-10 btn-input-link" type="text" placeholder="link">
                                     </div>
                                 </div>
-                                <div class="col-2">
-                                    <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
-                                        <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Kalendar Event"
-                                        />
-                                    </label>
-                                    <input class="ml-10 btn-input-link" type="text" placeholder="link">
-                                </div>
-                                <div class="col-2">
-                                    <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
-                                        <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Ajukan Event"
-                                        />
-                                    </label>
-                                    <input class="ml-10 btn-input-link" type="text" placeholder="link">
-                                </div>
-                            </div>
-                        </span>
-                    </label>
-                </div>
+                            </span>
+                        </label>
+                    </div>
 
-                <div class="col">
-                    <label class="custom-control custom-radio">
-                        <input id="radio1" name="radio" type="radio" class="custom-control-input" value="5" checked="checked">
-                        <span class="custom-control-indicator"></span>
-                        <span class="custom-control-description ml-5">
-                            No buttons
-                        </span>
-                    </label>
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="3">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-10">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label class="btn btn-action btn-medium mt-5 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-action btn-input-text" value="Upgrade Ke Gold Merchant"
+                                            />
+                                        </label>
+                                        <input class="btn-input-link" type="text" placeholder="link">
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Coba Sekarang"
+                                            />
+                                        </label>
+                                        <input class="ml-10 btn-input-link" type="text" placeholder="link">
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="4">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                <div class="row">
+                                    <div class="col-2">
+                                        <div>
+                                            <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                                <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Lihat Event Seller"
+                                                />
+                                            </label>
+                                            <input class="ml-10 btn-input-link" type="text" placeholder="link">
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Kalendar Event"
+                                            />
+                                        </label>
+                                        <input class="ml-10 btn-input-link" type="text" placeholder="link">
+                                    </div>
+                                    <div class="col-2">
+                                        <label class="btn btn-second btn-medium mt-5 ml-10 mb-15">
+                                            <input type="text" placeholder="Tambah Kredit TopAds" class="btn-preview-input-secondary btn-input-text" value="Ajukan Event"
+                                            />
+                                        </label>
+                                        <input class="ml-10 btn-input-link" type="text" placeholder="link">
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="custom-control custom-radio">
+                            <input id="radio1" name="radio" type="radio" class="custom-control-input" value="5" checked="checked">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description ml-5">
+                                No buttons
+                            </span>
+                        </label>
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- END OF PROMO -->
 
-        <button class='btn btn-primary input-block-level' id='preview' data-toggle="modal" data-target=".bd-example-modal-lg">Preview</button>
-        <button class='btn btn-secondary input-block-level' id='submit'>Submit</button>
+            <div class="row form-group">
+                <div class="col-4"></div>
+                <div class="col-4 row">
+                    <div class="col-4">
+                        <button class="btn btn-danger input-block-level back-page">Back</button>
+                    </div>
+                    <div class="col-4">
+                        <button class="btn btn-primary input-block-level" id="preview" data-toggle="modal" data-target=".bd-example-modal-lg">Preview</button>
+                    </div>
+                    <div class="col-4">
+                        <button class="btn btn-secondary input-block-level" id="submit">Submit</button>
+                    </div>
+                </div>
+                <div class="col-4"></div>
+            </div>
 
-        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" class="pull-right">&times;</span>
-                    </button>
-                    <iframe id="preview-mce" frameborder="0"></iframe>
+            <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true" class="pull-right">&times;</span>
+                        </button>
+                        <iframe id="preview-mce" frameborder="0"></iframe>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
-        crossorigin="anonymous"></script>
+    <!-- End Of Form for Content -->
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
     <script src="./tinymce/js/tinymce/jquery.tinymce.min.js"></script>
     <script src="./tinymce/js/tinymce/tinymce.min.js"></script>
 
@@ -289,8 +335,6 @@
     <script src="jQuery-File-Upload/js/jquery.fileupload-video.js"></script>
     <!-- The File Upload validation plugin -->
     <script src="jQuery-File-Upload/js/jquery.fileupload-validate.js"></script>
-
-    <script src="bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" charset="utf-8"></script>
 
     <script src="./index.js"></script>
 </body>

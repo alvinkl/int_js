@@ -1,12 +1,31 @@
 (function() {
 	var html_editing = { content_images: [] };
 	var html;
-	var current_form = $('#form-input');
+
+	var state = {
+		/* General form */
+		section: 0,
+		thumbnailImageURL: '',
+		title: '',
+		shortDescription: '',
+		startTime: 0,
+		endTime: 0,
+
+		/* Content form */
+		bannerImageDesktopURL: '',
+		content: '',
+		contentImagesURL: [],
+		footnote: '',
+		buttons: {
+			type: 0,
+			button_text: [],
+			button_link: [],
+		},
+	};
+
+	var $current_form = $('#form-input');
 
 	$(document).ready(function() {
-		var iframe = $('#preview-mce');
-		var iframe_content = iframe.contents().find('#content-iframe');
-
 		setupGeneral();
 		setupPreview();
 		setupTinyMCE();
@@ -19,28 +38,58 @@
 	});
 
 	function setupGeneral() {
+		var current_page = 1;
 		var remove_tmce = setInterval(function() {
-			tmc = $(
-				'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last'
+			$tmc = $(
+				'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last',
 			);
-			if (tmc.length) {
+			if ($tmc.length) {
 				$(
-					'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last'
+					'.mce-statusbar.mce-container.mce-panel.mce-stack-layout-item.mce-last',
 				).hide();
 				clearInterval(remove_tmce);
 			}
 		});
 
-		$('#section_type_select').on('change', function() {
-			var option = $(this).find('option:selected');
-			var value = option.val();
+		/* Setup next back clear button */
+		$('.clear-form').on('click', function() {
+			var $form = $(this).parents('.form-spec');
+			var $inputs = $form.find('input, textarea');
+			var $option = $form.find('#section_type_select').find('option');
 
-			var promo_input = $('.promo-code-form-inp');
-			promo_input
+			$inputs.val('');
+			$option.attr('selected', false);
+		});
+
+		$('.continue-page').on('click', function() {
+			var $form = $(this).parents('.form-spec');
+			var nextForm = $('#form-spec-' + ++current_page);
+
+			$form.fadeOut(500, function() {
+				nextForm.fadeIn();
+			});
+		});
+
+		$('.back-page').on('click', function() {
+			var $form = $(this).parents('.form-spec');
+			var $prevForm = $('#form-spec-' + --current_page);
+
+			$form.fadeOut(500, function() {
+				$prevForm.fadeIn();
+			});
+		});
+		/* End of Setup next previous clear button */
+
+		$('#section_type_select').on('change', function() {
+			var $option = $(this).find('option:selected');
+			var value = $option.val();
+
+			var $promo_input = $('.promo-code-form-inp');
+			$promo_input
 				.off()
 				.hide()
 				.val('');
-			if (value != 0) current_form.show();
+			if (value != 0) $current_form.show();
 			switch (value) {
 				case '1':
 					setUploadedImage('foryou');
@@ -59,7 +108,7 @@
 						}
 					});
 
-					promo_input.show();
+					$promo_input.show();
 					break;
 				case '3':
 					setUploadedImage('insight');
@@ -73,7 +122,7 @@
 					break;
 				default:
 					html(clearHTML);
-					current_form.hide();
+					$current_form.hide();
 					return;
 			}
 
@@ -82,7 +131,7 @@
 			/* BEGIN event listeners for input */
 
 			/* title input */
-			current_form
+			$current_form
 				.find('.title-inp')
 				.off()
 				.on('keyup', function(e) {
@@ -91,20 +140,16 @@
 				});
 
 			/* start and end time input */
-			$('#start-date-input')
-				.datetimepicker({ language: 'en-ID' });
-
+			$('#start-date-input').datetimepicker({ language: 'en-ID' });
 
 			/* END of event listeners for inputs */
 			/* reset radio buttons */
-			current_form.find('input[type=radio]').prop('checked', function() {
+			$current_form.find('input[type=radio]').prop('checked', function() {
 				return this.getAttribute('checked') == 'checked';
 			});
 
 			/* reset all inputs */
-			current_form.find('input[type=text]').val('');
-
-
+			$current_form.find('input[type=text]').val('');
 		});
 	}
 
@@ -132,29 +177,29 @@
 			setup: tinyMceFootnoteSetup,
 		};
 
-		function tinyMceSetup(editor) {
-			var iframe = $('#preview-mce');
-			var iframe_content = iframe.contents().find('#content-iframe');
+		function tinyMceSetup($editor) {
+			var $iframe = $('#preview-mce');
+			var $iframe_content = $iframe.contents().find('#content-iframe');
 
-			editor.on('keyup', function() {
+			$editor.on('keyup', function() {
 				var content = tinymce.activeEditor.getContent();
 				html_editing = Object.assign({}, html_editing, { content });
 			});
-			editor.on('change', function() {
+			$editor.on('change', function() {
 				var content = tinymce.activeEditor.getContent();
 				html_editing = Object.assign({}, html_editing, { content });
 			});
 		}
 
-		function tinyMceFootnoteSetup(editor) {
-			var iframe = $('#preview-mce');
-			var iframe_content = iframe.contents().find('#content-iframe');
+		function tinyMceFootnoteSetup($editor) {
+			var $iframe = $('#preview-mce');
+			var $iframe_content = $iframe.contents().find('#content-iframe');
 
-			editor.on('keyup', function() {
+			$editor.on('keyup', function() {
 				var footnote = tinymce.activeEditor.getContent();
 				html_editing = Object.assign({}, html_editing, { footnote });
 			});
-			editor.on('change', function() {
+			$editor.on('change', function() {
 				var footnote = tinymce.activeEditor.getContent();
 				html_editing = Object.assign({}, html_editing, { footnote });
 			});
@@ -165,15 +210,15 @@
 	}
 
 	function setupIframe() {
-		var iframe = $('#preview-mce');
-		var iframe_content = iframe.contents();
+		var $iframe = $('#preview-mce');
+		var $iframe_content = $iframe.contents();
 		var addCSS = function(href) {
-			iframe_content.find('head').append(
+			$iframe_content.find('head').append(
 				$('<link />', {
 					rel: 'stylesheet',
 					href,
 					type: 'text/css',
-				})
+				}),
 			);
 		};
 
@@ -182,7 +227,7 @@
 		addCSS('http://ak-alvin.ndvl/css/dv3-global-short.css');
 		addCSS('http://ak-alvin.ndvl/css/dv3-new-button.css');
 
-		iframe_content.find('body').html(`
+		$iframe_content.find('body').html(`
         <div class="maincontent-admin maincontent-admin--transparent">
             <h3 class="fs-16 fw-600 mt-5">Info Penjual</h3>
             <div class="maincontent-container">
@@ -242,9 +287,7 @@
 					new Clipboard('.copy');
 					$('.copy').on('click', function(e) {
 						e.preventDefault();
-						$(this).html(
-							'<i style="color: green">&#10003;</i> Tersalin'
-						);
+						$(this).html('<i style="color: green">&#10003;</i> Tersalin');
 					});
 				};
 
@@ -270,8 +313,9 @@
 			if (html.banner.url) {
 				header = `
 					<content-header hidden>${JSON.stringify(html.banner.url)}</content-header>
-					<div class="info-top-banner info-top-banner--video relative" style="background-image: url(${html
-						.banner.url});">
+					<div class="info-top-banner info-top-banner--video relative" style="background-image: url(${
+						html.banner.url
+					});">
 					</div>
 				`;
 				// <button type="button" class="btn-see-video btn-see-video--center btn-see-video--white">
@@ -287,9 +331,7 @@
 					.join('');
 			}
 
-			var border_content = html.banner.url
-				? 'no-border-top'
-				: 'border-top';
+			var border_content = html.banner.url ? 'no-border-top' : 'border-top';
 			var contents = `
 			${header}
 			<content>
@@ -308,9 +350,7 @@
 						</div>
 					</div>
 					<div style="padding: 0 20px;margin-bottom:10px">
-						<content-images hidden>${JSON.stringify(
-							html.content_images
-						)}</content-images>
+						<content-images hidden>${JSON.stringify(html.content_images)}</content-images>
 						${render_content_images}
 					</div>
 					<div class="pl-20 pr-20 clearfix text-center">
@@ -382,18 +422,18 @@
 		};
 	}
 
-	function processButton(type, component, data) {
+	function processButton(type, $component, data) {
 		switch (type) {
 			case '1':
-				var button_text = component
-					? component
+				var button_text = $component
+					? $component
 							.parent()
 							.find('.btn-input-text')
 							.val()
 					: data.text[0];
 
-				var button_link = component
-					? component
+				var button_link = $component
+					? $component
 							.parent()
 							.find('.btn-input-link')
 							.val()
@@ -408,19 +448,21 @@
 				return `
 				<div class="pl-20 pr-20 clearfix text-center">
 					<content-button hidden>${JSON.stringify(content_btn)}</content-button>
-					<a href="${button_link}" class="btn btn-action btn-medium mt-5 ml-10 mb-15">${button_text}</a>
+					<a href="${button_link}" class="btn btn-action btn-medium mt-5 ml-10 mb-15">${
+					button_text
+				}</a>
 				</div>
 			`;
 			case '2':
-				var button_text = component
-					? component
+				var button_text = $component
+					? $component
 							.parent()
 							.find('.btn-input-text')
 							.val()
 					: data.text[0];
 
-				var button_link = component
-					? component
+				var button_link = $component
+					? $component
 							.parent()
 							.find('.btn-input-link')
 							.val()
@@ -435,18 +477,20 @@
 				return `
 				<div class="pl-20 pr-20 clearfix text-center">
 					<content-button hidden>${JSON.stringify(content_btn)}</content-button>
-					<a href="${button_link}" class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text}</a>
+					<a href="${button_link}" class="btn btn-second btn-medium mt-5 ml-10 mb-15">${
+					button_text
+				}</a>
 				</div>
 			`;
 			case '3':
-				var button_text = component
+				var button_text = $component
 					? [
-							component
+							$component
 								.parent()
 								.find('.btn-input-text')
 								.eq(0)
 								.val(),
-							component
+							$component
 								.parent()
 								.find('.btn-input-text')
 								.eq(1)
@@ -454,14 +498,14 @@
 						]
 					: data.text;
 
-				var button_link = component
+				var button_link = $component
 					? [
-							component
+							$component
 								.parent()
 								.find('.btn-input-link')
 								.eq(0)
 								.val(),
-							component
+							$component
 								.parent()
 								.find('.btn-input-link')
 								.eq(1)
@@ -477,24 +521,30 @@
 				return `
 				<div class="pl-20 pr-20 clearfix text-center">
 					<content-button hidden>${JSON.stringify(content_btn)}</content-button>
-					<a href="${button_link[0]}" class="btn btn-action btn-medium mt-5 mb-15">${button_text[0]}</a>
-					<a href="${button_link[1]}" class="btn btn-second btn-medium mt-5 ml-10 mb-15">${button_text[1]}</a>
+					<a href="${button_link[0]}" class="btn btn-action btn-medium mt-5 mb-15">${
+					button_text[0]
+				}</a>
+					<a href="${
+						button_link[1]
+					}" class="btn btn-second btn-medium mt-5 ml-10 mb-15">${
+					button_text[1]
+				}</a>
 				</div>
 			`;
 			case '4':
-				var button_text = component
+				var button_text = $component
 					? [
-							component
+							$component
 								.parent()
 								.find('.btn-input-text')
 								.eq(0)
 								.val(),
-							component
+							$component
 								.parent()
 								.find('.btn-input-text')
 								.eq(1)
 								.val(),
-							component
+							$component
 								.parent()
 								.find('.btn-input-text')
 								.eq(2)
@@ -502,19 +552,19 @@
 						]
 					: data.text;
 
-				var button_link = component
+				var button_link = $component
 					? [
-							component
+							$component
 								.parent()
 								.find('.btn-input-link')
 								.eq(0)
 								.val(),
-							component
+							$component
 								.parent()
 								.find('.btn-input-link')
 								.eq(1)
 								.val(),
-							component
+							$component
 								.parent()
 								.find('.btn-input-link')
 								.eq(2)
@@ -531,9 +581,15 @@
 				return `
 				<div class="row-fluid btn-list-wrapper">
 					<content-button hidden>${JSON.stringify(content_btn)}</content-button>
-                    <a href="${button_link[0]}" class="btn btn-second">${button_text[0]}</a>
-                    <a href="${button_link[1]}" class="btn btn-second">${button_text[1]}</a>
-                    <a href="${button_link[2]}" class="btn btn-second">${button_text[2]}</a>
+                    <a href="${button_link[0]}" class="btn btn-second">${
+					button_text[0]
+				}</a>
+                    <a href="${button_link[1]}" class="btn btn-second">${
+					button_text[1]
+				}</a>
+                    <a href="${button_link[2]}" class="btn btn-second">${
+					button_text[2]
+				}</a>
 				</div>
 			`;
 			default:
@@ -543,15 +599,15 @@
 
 	function setupPreview() {
 		setupIframe();
-		var iframe = $('#preview-mce');
-		var iframe_content = iframe.contents().find('#content-iframe');
+		var $iframe = $('#preview-mce');
+		var $iframe_content = $iframe.contents().find('#content-iframe');
 		$('#preview').on('click', function(e) {
 			e.preventDefault();
-			var buttons_type = current_form
+			var buttons_type = $current_form
 				.find('.buttons-radio input:radio:checked')
 				.val();
 
-			var current_button = current_form
+			var current_button = $current_form
 				.find('.buttons-radio input:radio')
 				.eq(buttons_type - 1);
 
@@ -560,11 +616,11 @@
 
 			console.log(html_editing);
 
-			setIframeContent(iframe_content, html(html_editing));
+			setIframeContent($iframe_content, html(html_editing));
 		});
 	}
 
-	function setIframeContent(component, html) {
+	function setIframeContent($component, html) {
 		var date_format = {
 			day: 'numeric',
 			month: 'short',
@@ -572,64 +628,55 @@
 
 		var today = new Date();
 		today = today.toLocaleDateString('id-ID', date_format);
-		component.html(html.replace('%date_time%', today));
+		$component.html(html.replace('%date_time%', today));
 	}
 
 	function processEditContent(html) {
 		var header_reg = new RegExp(
 				'<content-header hidden>(.+)</content-header>',
-				'i'
+				'i',
 			),
 			header_content = header_reg.exec(html),
-			header_content = header_content
-				? JSON.parse(header_content[1])
-				: {};
+			header_content = header_content ? JSON.parse(header_content[1]) : {};
 
 		var title_reg = new RegExp(
 				'<content-title hidden>(.+)</content-title>',
-				'i'
+				'i',
 			),
 			title_content = title_reg.exec(html),
 			title_content = title_content ? title_content[1] : '';
 
-		var text_reg = new RegExp(
-				'<content-text hidden>(.+)</content-text>',
-				'i'
-			),
+		var text_reg = new RegExp('<content-text hidden>(.+)</content-text>', 'i'),
 			text_content = text_reg.exec(html),
 			text_content = text_content ? text_content[1] : '';
 
 		var promo_reg = new RegExp(
 				'<content-promo hidden>(.+)</content-promo>',
-				'i'
+				'i',
 			),
 			promo_content = promo_reg.exec(html),
 			promo_content = promo_content ? promo_content[1] : '';
 
 		var images_reg = new RegExp(
 				'<content-images hidden>(.+)</content-images>',
-				'i'
+				'i',
 			),
 			images_content = images_reg.exec(html),
-			images_content = images_content
-				? JSON.parse(images_content[1])
-				: {};
+			images_content = images_content ? JSON.parse(images_content[1]) : {};
 
 		var footnote_reg = new RegExp(
 				'<content-footnote hidden>(.+)</content-footnote>',
-				'i'
+				'i',
 			),
 			footnote_content = footnote_reg.exec(html),
 			footnote_content = footnote_content ? footnote_content[1] : '';
 
 		var buttons_reg = new RegExp(
 				'<content-button hidden>(.+)</content-button>',
-				'i'
+				'i',
 			),
 			button_content = buttons_reg.exec(html),
-			button_content = button_content
-				? JSON.parse(button_content[1])
-				: {};
+			button_content = button_content ? JSON.parse(button_content[1]) : {};
 
 		return {
 			header: header_content,
@@ -677,7 +724,7 @@
 				// which actually support image resizing, but fail to
 				// send Blob objects via XHR requests:
 				disableImageResize: /Android(?!.*Chrome)|Opera/.test(
-					window.navigator.userAgent
+					window.navigator.userAgent,
 				),
 				previewMaxWidth: 500,
 				previewMaxHeight: 300,
@@ -689,9 +736,7 @@
 				$.each(data.files, function(index, file) {
 					var node = $('<p/>').append($('<span/>').text(file.name));
 					if (!index) {
-						node
-							.append('<br>')
-							.append(uploadButton.clone(true).data(data));
+						node.append('<br>').append(uploadButton.clone(true).data(data));
 					}
 					node.appendTo(data.context);
 				});
@@ -706,9 +751,7 @@
 				if (file.error) {
 					node
 						.append('<br>')
-						.append(
-							$('<span class="text-danger"/>').text(file.error)
-						);
+						.append($('<span class="text-danger"/>').text(file.error));
 				}
 				if (index + 1 === data.files.length) {
 					data.context
@@ -729,9 +772,7 @@
 							.prop('href', file.url);
 						$(data.context.children()[index]).wrap(link);
 					} else if (file.error) {
-						var error = $('<span class="text-danger"/>').text(
-							file.error
-						);
+						var error = $('<span class="text-danger"/>').text(file.error);
 						$(data.context.children()[index])
 							.append('<br>')
 							.append(error);
@@ -741,7 +782,7 @@
 			.on('fileuploadfail', function(e, data) {
 				$.each(data.files, function(index) {
 					var error = $('<span class="text-danger"/>').text(
-						'File upload failed.'
+						'File upload failed.',
 					);
 					$(data.context.children()[index])
 						.append('<br>')
@@ -773,15 +814,13 @@
 			url: 'https://up-staging.tokopedia.net/upload/attachment',
 			// type: 'OPTIONS',
 			headers: {
-				'Content-Type':
-					'application/x-www-form-urlencoded; charset=UTF-8',
-				'Access-Control-Allow-Origin':
-					'https://up-staging.tokopedia.net',
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+				'Access-Control-Allow-Origin': 'https://up-staging.tokopedia.net',
 			},
 			beforeSend: function(request) {
 				request.setRequestHeader(
 					'Access-Control-Request-Headers',
-					'content-disposition'
+					'content-disposition',
 				);
 			},
 		}).then(
@@ -796,7 +835,7 @@
 				success: function(result) {
 					console.log(result);
 				},
-			})
+			}),
 		);
 	}
 })();
