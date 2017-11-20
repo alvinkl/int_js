@@ -1,43 +1,46 @@
 (function() {
-	var html_editing = { content_images: [] };
+	var html_editing = {
+		banner: {},
+		title: '',
+		content: '',
+		content_images: [],
+		promo_code: '',
+		buttons: '',
+		footnote: '',
+	};
+
 	var html;
 
-	var state = {
+	var initial_state = {
 		/* General form */
 		section: 0,
 		thumbnailImageURL: '',
 		title: '',
 		shortDescription: '',
-		startTime: 0,
-		endTime: 0,
+		startDate: 0,
+		endDate: 0,
 
 		/* Content form */
 		bannerImageDesktopURL: '',
 		content: '',
 		contentImagesURL: [],
 		footnote: '',
-		buttons: {
-			type: 0,
-			button_text: [],
-			button_link: [],
-		},
+		button_type: 0,
+		promoCode: '',
 	};
+
+	var currentState = new State(initial_state);
 
 	var $current_form = $('#form-input');
 
 	$(document).ready(function() {
-		setupGeneral();
-		setupPreview();
-		setupTinyMCE();
-		setupImageUploaderContent();
-
-		$('#submit').on('click', function(e) {
-			e.preventDefault();
-			submitUploadImage($('#image-selector-desktop'));
-		});
+		setupGeneralForm();
+		setupFormContent();
 	});
 
-	function setupGeneral() {
+	function setupGeneralForm() {
+		var $current_form = $('#form-spec-1');
+
 		var current_page = 1;
 		var remove_tmce = setInterval(function() {
 			$tmc = $(
@@ -54,11 +57,34 @@
 		/* Setup next back clear button */
 		$('.clear-form').on('click', function() {
 			var $form = $(this).parents('.form-spec');
-			var $inputs = $form.find('input, textarea');
-			var $option = $form.find('#section_type_select').find('option');
+			var $form2 = $('#form-spec-2');
 
-			$inputs.val('');
+			var $form_inputs = $form.find('input, textarea');
+			var $option = $form.find('#section_type_select').find('option');
+			var $radio = $form.find('input[type=radio]');
+			var $promo_input = $('.promo-code-form-inp');
+			var $content_mce = tinymce.get('mce');
+			var $footnote_mce = tinymce.get('ftn');
+			var $form2_inputs = $form2.find('input');
+
+			$form_inputs.val('');
+			$form2_inputs.val('');
+
 			$option.attr('selected', false);
+			$radio.prop('checked', function() {
+				return this.getAttribute('checked') == 'checked';
+			});
+
+			$promo_input
+				.off()
+				.hide()
+				.val('');
+
+			$content_mce.setContent('');
+			$footnote_mce.setContent('');
+
+			html_editing = clearHTML;
+			currentState.setState(initialState);
 		});
 
 		$('.continue-page').on('click', function() {
@@ -80,77 +106,99 @@
 		});
 		/* End of Setup next previous clear button */
 
+		/* BEGIN event listeners for input */
+		$current_form
+			.find('input[type=text], textarea')
+			.off()
+			.on('change keyup', function(e) {
+				var text = e.target.value,
+					type = e.target.id;
+
+				currentState.setState({ [type]: text });
+				html_editing[type] = text;
+			});
+
+		$current_form
+			.find('input[type=datetime-local]')
+			.off()
+			.on('change keyup', function(e) {
+				var text = e.target.value,
+					type = e.target.id,
+					unix = Date.parse(text) / 1000;
+
+				currentState.setState({ [type]: unix });
+			});
+
+		/* END of event listeners for inputs */
+
 		$('#section_type_select').on('change', function() {
 			var $option = $(this).find('option:selected');
 			var value = $option.val();
 
-			var $promo_input = $('.promo-code-form-inp');
-			$promo_input
-				.off()
-				.hide()
-				.val('');
-			if (value != 0) $current_form.show();
-			switch (value) {
-				case '1':
-					setUploadedImage('foryou');
-					html = compileHTML('For You');
-					break;
-				case '2':
-					setUploadedImage('promo');
-					html = compileHTML('Promo');
-
-					$('#promo-code-inp').on('keyup', function(e) {
-						var promo_code = $(this).val();
-						if (promo_code.length) {
-							html_editing = Object.assign({}, html_editing, {
-								promo_code,
-							});
-						}
-					});
-
-					$promo_input.show();
-					break;
-				case '3':
-					setUploadedImage('insight');
-					html = compileHTML('Insight');
-					break;
-				case '4':
-					html = compileHTML('Featured');
-					break;
-				case '5':
-					html = compileHTML('Event');
-					break;
-				default:
-					html(clearHTML);
-					$current_form.hide();
-					return;
-			}
-
-			html_editing = clearHTML;
-
-			/* BEGIN event listeners for input */
-
-			/* title input */
-			$current_form
-				.find('.title-inp')
-				.off()
-				.on('keyup', function(e) {
-					var title = $(this).val();
-					html_editing = Object.assign({}, html_editing, { title });
-				});
-
-			/* start and end time input */
-			$('#start-date-input').datetimepicker({ language: 'en-ID' });
-
-			/* END of event listeners for inputs */
-			/* reset radio buttons */
-			$current_form.find('input[type=radio]').prop('checked', function() {
-				return this.getAttribute('checked') == 'checked';
-			});
-
-			/* reset all inputs */
-			$current_form.find('input[type=text]').val('');
+			currentState.setState({ section: value });
+			setupContent(value);
 		});
+	}
+
+	function setupContent(type = 0) {
+		switch (type) {
+			case '1':
+				setUploadedImage('foryou');
+				html = compileHTML('For You');
+				break;
+			case '2':
+				setUploadedImage('promo');
+				html = compileHTML('Promo');
+				break;
+			case '3':
+				setUploadedImage('insight');
+				html = compileHTML('Insight');
+				break;
+			case '4':
+				html = compileHTML('Featured');
+				break;
+			case '5':
+				html = compileHTML('Event');
+				break;
+			default:
+				html(clearHTML);
+		}
+	}
+
+	function setupFormContent() {
+		setupPreview();
+		setupTinyMCE();
+		setupImageUploaderContent();
+
+		/* BEGIN event listeners for input */
+		var $current_form = $('#form-spec-2');
+		var $promo_input = $current_form.find('#promo-code-inp');
+		var $button_selection = $current_form.find('.buttons-radio');
+
+		var $submit = $current_form.find('#submit');
+
+		$promo_input.off().on('keyup', function(e) {
+			var promo_code = $(this).val();
+			if (promo_code.length) {
+				currentState.setState({ promoCode: promo_code });
+				html_editing = Object.assign({}, html_editing, {
+					promo_code,
+				});
+			}
+		});
+
+		$button_selection.on('change', function(e) {
+			var button_type =
+				parseInt(e.target.value) || currentState.getState().button_type;
+
+			currentState.setState({ button_type });
+		});
+
+		$submit.off().on('click', function(e) {
+			e.preventDefault();
+			submitUploadImage($('#image-selector-desktop'));
+		});
+		/* BEGIN event listeners for input */
 	}
 
 	function setupTinyMCE() {
@@ -183,10 +231,14 @@
 
 			$editor.on('keyup', function() {
 				var content = tinymce.activeEditor.getContent();
+
+				currentState.setState({ content });
 				html_editing = Object.assign({}, html_editing, { content });
 			});
 			$editor.on('change', function() {
 				var content = tinymce.activeEditor.getContent();
+
+				currentState.setState({ content });
 				html_editing = Object.assign({}, html_editing, { content });
 			});
 		}
@@ -197,10 +249,14 @@
 
 			$editor.on('keyup', function() {
 				var footnote = tinymce.activeEditor.getContent();
+
+				currentState.setState({ footnote });
 				html_editing = Object.assign({}, html_editing, { footnote });
 			});
 			$editor.on('change', function() {
 				var footnote = tinymce.activeEditor.getContent();
+
+				currentState.setState({ footnote });
 				html_editing = Object.assign({}, html_editing, { footnote });
 			});
 		}
@@ -245,16 +301,10 @@
 
 	var clearHTML = (function() {
 		return {
-			banner: {
-				url: '',
-			},
+			banner: {},
 			title: '',
 			content: '',
-			content_images: [
-				{
-					url: '',
-				},
-			],
+			content_images: [],
 			promo_code: '',
 			buttons: '',
 			footnote: '',
@@ -407,6 +457,7 @@
 			var blobURL = window.URL.createObjectURL(blob);
 
 			if (type == 0) {
+				currentState.setState({ bannerImageDesktopURL: blobURL });
 				html_editing = Object.assign({}, html_editing, {
 					banner: { url: blobURL },
 				});
@@ -415,6 +466,9 @@
 				content_images.push({
 					url: blobURL,
 				});
+
+				currentState.setState({ contentImagesURL: content_images });
+
 				html_editing = Object.assign({}, html_editing, {
 					content_images,
 				});
@@ -422,9 +476,12 @@
 		};
 	}
 
-	function processButton(type, $component, data) {
+	function processButton(type, data) {
+		var $component = undefined;
+		if (!data) $component = $('.buttons-radio input:radio').eq(type - 1);
+
 		switch (type) {
-			case '1':
+			case 1:
 				var button_text = $component
 					? $component
 							.parent()
@@ -453,7 +510,7 @@
 				}</a>
 				</div>
 			`;
-			case '2':
+			case 2:
 				var button_text = $component
 					? $component
 							.parent()
@@ -482,7 +539,7 @@
 				}</a>
 				</div>
 			`;
-			case '3':
+			case 3:
 				var button_text = $component
 					? [
 							$component
@@ -531,7 +588,7 @@
 				}</a>
 				</div>
 			`;
-			case '4':
+			case 4:
 				var button_text = $component
 					? [
 							$component
@@ -603,18 +660,10 @@
 		var $iframe_content = $iframe.contents().find('#content-iframe');
 		$('#preview').on('click', function(e) {
 			e.preventDefault();
-			var buttons_type = $current_form
-				.find('.buttons-radio input:radio:checked')
-				.val();
+			var state = currentState.getState();
 
-			var current_button = $current_form
-				.find('.buttons-radio input:radio')
-				.eq(buttons_type - 1);
-
-			var buttons = processButton(buttons_type, current_button);
+			var buttons = processButton(state.button_type);
 			html_editing = Object.assign({}, html_editing, { buttons });
-
-			console.log(html_editing);
 
 			setIframeContent($iframe_content, html(html_editing));
 		});
@@ -626,9 +675,12 @@
 			month: 'short',
 		};
 
-		var today = new Date();
-		today = today.toLocaleDateString('id-ID', date_format);
-		$component.html(html.replace('%date_time%', today));
+		var state = currentState.getState();
+		var unix = state.startDate * 1000;
+
+		var date = new Date(unix);
+		date = date.toLocaleDateString('id-ID', date_format);
+		$component.html(html.replace('%date_time%', date));
 	}
 
 	function processEditContent(html) {
@@ -838,4 +890,22 @@
 			}),
 		);
 	}
+	/* Start of Object State to manage state of the page*/
+	function State(state) {
+		this.state = state;
+	}
+
+	State.prototype.setState = function(newState, cb) {
+		this.state = Object.assign({}, this.state, newState);
+		console.log('=== state update ===');
+		console.log(this.state);
+
+		if (cb) cb(this.state);
+	};
+
+	State.prototype.getState = function() {
+		return this.state;
+	};
+
+	/* End of Object State to manage state of the page*/
 })();

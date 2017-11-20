@@ -46,7 +46,7 @@
                 </div>
                 <div class="col-7">
                     <div>
-                        <input type="file" id="image-selector-thumbnail" />
+                        <input type="file" accept="image/*" id="image-selector-thumbnail" />
                         <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
                         <div id="files-thumbnail" class="files"></div>
                     </div>
@@ -58,7 +58,7 @@
                     <label for="">Title</label>
                 </div>
                 <div class="col-7">
-                    <input type="text" class="form-control title-inp" />
+                    <input type="text" class="form-control input-text" id="title"/>
                 </div>
             </div>
             <div class="row form-group">
@@ -66,7 +66,7 @@
                     <label for="">Short Description</label>
                 </div>
                 <div class="col-7">
-                    <textarea rows="2" class="form-control" id="short-description"></textarea>
+                    <textarea rows="2" class="form-control" id="shortDescription"></textarea>
                 </div>
             </div>
             <div class="row form-group">
@@ -74,12 +74,7 @@
                     <label for="">Start Time</label>
                 </div>
                 <div class="col-7">
-                    <div id="start-date-input" class="input-append date">
-                        <input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
-                        <span class="add-on">
-                          <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                        </span>
-                    </div>
+                    <input type="datetime-local" id="startDate">
                 </div>
             </div>
             <div class="row form-group">
@@ -87,12 +82,7 @@
                     <label for="">End Time</label>
                 </div>
                 <div class="col-7">
-                    <div id="end-date-input" class="input-append date">
-                        <input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
-                        <span class="add-on">
-                          <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                        </span>
-                    </div>
+                    <input type="datetime-local" id="endDate">
                 </div>
             </div>
 
@@ -100,7 +90,7 @@
                 <div class="col-4"></div>
                 <div class="col-4 row">
                     <div class="col-6">
-                        <button class="btn btn-danger input-block-level clear-form">Clear</button>
+                        <button class="btn btn-danger input-block-level clear-form">Reset Form</button>
                     </div>
                     <div class="col-6">
                         <button class="btn btn-green input-block-level continue-page">Continue</button>
@@ -122,7 +112,7 @@
                     </div>
                     <div class="col-7">
                         <div>
-                            <input type="file" id="image-selector-desktop" />
+                            <input type="file" accept="image/*" id="image-selector-desktop" />
                             <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
                             <div id="files-banner" class="files"></div>
                         </div>
@@ -159,7 +149,7 @@
                         <br>
                     </div>
                 </div>
-                <div class="row form-group promo-code-form-inp" style="display:none;">
+                <div class="row form-group promo-code-form-inp">
                     <div class="col-5">
                         <label for="">Promo Code</label>
                     </div>
