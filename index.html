@@ -46,9 +46,12 @@
                 </div>
                 <div class="col-7">
                     <div>
-                        <input type="file" accept="image/*" id="image-selector-thumbnail" />
-                        <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
-                        <div id="files-thumbnail" class="files"></div>
+                        <button class="btn mr-5 mb-5" id="image-selector-thumbnail">Choose Image</button>
+                        <button class="btn mr-5 mb-5" id="upload-thumbnail" style="display:none;">Upload</button>
+                        <label class="" id="remove-thumbnail" style="display:none;">Cancel</label>
+                        <div id="filelist"></div>
+                        <div id="console"></div>
+                        <div id="preview-thumbnail"></div>
                     </div>
                 </div>
 
@@ -325,6 +328,8 @@
     <script src="jQuery-File-Upload/js/jquery.fileupload-video.js"></script>
     <!-- The File Upload validation plugin -->
     <script src="jQuery-File-Upload/js/jquery.fileupload-validate.js"></script>
+
+    <script type="text/javascript" src="plupload-2.3.6/js/plupload.full.min.js"></script>
 
     <script src="./index.js"></script>
 </body>

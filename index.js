@@ -107,27 +107,121 @@
 		/* End of Setup next previous clear button */
 
 		/* BEGIN event listeners for input */
-		$current_form
-			.find('input[type=text], textarea')
-			.off()
-			.on('change keyup', function(e) {
-				var text = e.target.value,
-					type = e.target.id;
+		var $input_text = $current_form.find('input[type=text], textarea');
+		var $input_date = $current_form.find('input[type=datetime-local]');
+		var $image_thumbnail = $current_form.find('#pickfiles');
 
-				currentState.setState({ [type]: text });
-				html_editing[type] = text;
-			});
+		$input_text.off().on('change keyup', function(e) {
+			var text = e.target.value,
+				type = e.target.id;
 
-		$current_form
-			.find('input[type=datetime-local]')
-			.off()
-			.on('change keyup', function(e) {
-				var text = e.target.value,
-					type = e.target.id,
-					unix = Date.parse(text) / 1000;
+			currentState.setState({ [type]: text });
+			html_editing[type] = text;
+		});
 
-				currentState.setState({ [type]: unix });
-			});
+		$input_date.off().on('change keyup', function(e) {
+			var text = e.target.value,
+				type = e.target.id,
+				unix = Date.parse(text) / 1000;
+
+			currentState.setState({ [type]: unix });
+		});
+
+		var params = {
+			token: '1020eb1432094d7257b23e79f695f745',
+			user_id: 1163,
+			server_id: 49,
+			id: 1163,
+		};
+
+		/* thumbnail uploader */
+		var $upload_thumbnail = $('#upload-thumbnail');
+		var $remove_thumbnail = $('#remove-thumbnail');
+		var $preview_thumbnail = $('#preview-thumbnail');
+
+		var uploader = new plupload.Uploader({
+			runtimes: 'html5,flash,silverlight,html4',
+
+			browse_button: 'image-selector-thumbnail', // you can pass in id...
+
+			url: 'http://go.ak-alvin.ndvl:777/upload/attachment',
+
+			flash_swf_url: '../js/Moxie.swf',
+			silverlight_xap_url: '../js/Moxie.xap',
+
+			multipart_params: params,
+			file_data_name: 'fileToUpload',
+
+			filters: {
+				max_file_size: '10mb',
+				mime_types: [{ title: 'Image files', extensions: 'jpg,gif,png' }],
+			},
+
+			init: {
+				PostInit: function() {
+					$upload_thumbnail.on('click', function() {
+						uploader.start();
+					});
+
+					$remove_thumbnail.on('click', function() {
+						$(this).hide();
+						uploader.files.pop();
+						$preview_thumbnail.html('');
+					});
+				},
+
+				FilesAdded: function(up, files) {
+					$remove_thumbnail.show();
+					$upload_thumbnail.show();
+
+					var file = files[0];
+					var thumbnail_loader = new moxie.image.Image();
+
+					thumbnail_loader.onerror = function(e) {
+						console.log(e);
+					};
+
+					thumbnail_loader.onload = () => {
+						var src = thumbnail_loader.getAsDataURL();
+						convertURIToImageData(src).then(function(blob) {
+							window.URL = window.URL || window.webkitURL;
+							var blobURL = window.URL.createObjectURL(blob);
+
+							$preview_thumbnail.html(
+								`<div class="loading-bar" style="height: 20px; background: white; position: absolute;"></div><img src="${
+									blobURL
+								}" />`,
+							);
+
+							currentState.setState({ thumbnailImageURL: blobURL });
+						});
+					};
+
+					thumbnail_loader.load(file.getSource());
+				},
+
+				UploadProgress: function(up, file) {
+					var $preview_loading_bar = $preview_thumbnail.find('.loading-bar');
+
+					$preview_loading_bar.text(file.percent + '%');
+
+					$preview_loading_bar.css({ width: `${file.percent}%` });
+				},
+
+				FileUploaded: function(uploader, file, info) {
+					$upload_thumbnail.hide();
+					var info = JSON.parse(info.response);
+
+					currentState.setState({ thumbnailImageURL: info.pic_src });
+				},
+
+				Error: function(up, err) {
+					console.log('Error #' + err.code + ': ' + err.message);
+				},
+			},
+		});
+
+		uploader.init();
 
 		/* END of event listeners for inputs */
 
@@ -137,6 +231,32 @@
 
 			currentState.setState({ section: value });
 			setupContent(value);
+		});
+	}
+
+	function convertURIToImageData(URI) {
+		return new Promise(function(resolve, reject) {
+			if (URI == null) return reject();
+			var canvas = document.createElement('canvas'),
+				context = canvas.getContext('2d'),
+				image = new Image();
+			image.addEventListener(
+				'load',
+				function() {
+					canvas.width = image.width;
+					canvas.height = image.height;
+					context.drawImage(image, 0, 0, canvas.width, canvas.height);
+					canvas.toBlob(
+						function(blob) {
+							resolve(blob);
+						},
+						'image/jpeg',
+						1,
+					);
+				},
+				false,
+			);
+			image.src = URI;
 		});
 	}
 
@@ -680,6 +800,9 @@
 
 		var date = new Date(unix);
 		date = date.toLocaleDateString('id-ID', date_format);
+
+		console.log(processEditContent(html));
+
 		$component.html(html.replace('%date_time%', date));
 	}
 
