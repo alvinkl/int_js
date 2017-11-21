@@ -47,10 +47,7 @@
                 <div class="col-7">
                     <div>
                         <button class="btn mr-5 mb-5" id="image-selector-thumbnail">Choose Image</button>
-                        <button class="btn mr-5 mb-5" id="upload-thumbnail" style="display:none;">Upload</button>
                         <label class="" id="remove-thumbnail" style="display:none;">Cancel</label>
-                        <div id="filelist"></div>
-                        <div id="console"></div>
                         <div id="preview-thumbnail"></div>
                     </div>
                 </div>
@@ -115,9 +112,9 @@
                     </div>
                     <div class="col-7">
                         <div>
-                            <input type="file" accept="image/*" id="image-selector-desktop" />
-                            <label class="btn btn-warning remove-banner-image" style="display:none;">x</label>
-                            <div id="files-banner" class="files"></div>
+                            <button class="btn mr-5 mb-5" id="image-selector-banner">Choose Image</button>
+                            <label class="" id="remove-banner" style="display:none;">Cancel</label>
+                            <div id="preview-banner"></div>
                         </div>
                     </div>
 
@@ -134,22 +131,11 @@
                         <label for="">Content Images</label>
                     </div>
                     <div class="col-7">
-                        <!-- The fileinput-button span is used to style the file input field as button -->
-                        <span class="btn fileinput-button">
-                            <i class="glyphicon glyphicon-plus"></i>
-                            <span>Add images...</span>
-                            <!-- The file input field used as target for the file upload widget -->
-                            <input id="fileupload" type="file" name="files[]">
-                        </span>
-                        <br>
-                        <br>
-                        <!-- The global progress bar -->
-                        <div id="progress" class="progress" style="display:none;">
-                            <div class="progress-bar progress-bar-success"></div>
+                        <div>
+                            <button class="btn mr-5 mb-5" id="image-selector-content">Choose Image</button>
+                            <label class="" id="remove-content" style="display:none;">Cancel</label>
+                            <div id="preview-content"></div>
                         </div>
-                        <!-- The container for the uploaded files -->
-                        <div id="files" class="files"></div>
-                        <br>
                     </div>
                 </div>
                 <div class="row form-group promo-code-form-inp">

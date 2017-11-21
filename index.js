@@ -1,4 +1,5 @@
 (function() {
+	/* Start of initialization data */
 	var html_editing = {
 		banner: {},
 		title: '',
@@ -10,6 +11,13 @@
 	};
 
 	var html;
+
+	/*
+		uploader[0] = thumbnail image,
+		uploader[1] = header image,
+		uploader[2] = content_images
+	*/
+	var uploader = [];
 
 	var initial_state = {
 		/* General form */
@@ -24,19 +32,24 @@
 		bannerImageDesktopURL: '',
 		content: '',
 		contentImagesURL: [],
-		footnote: '',
-		button_type: 0,
-		promoCode: '',
 	};
 
 	var currentState = new State(initial_state);
 
 	var $current_form = $('#form-input');
 
+	/* End of initialization data */
+
 	$(document).ready(function() {
 		setupGeneralForm();
 		setupFormContent();
+
+		uploader.map(function(u) {
+			u.init();
+		});
 	});
+
+	/* Start of functions for setup forms */
 
 	function setupGeneralForm() {
 		var $current_form = $('#form-spec-1');
@@ -127,103 +140,18 @@
 			currentState.setState({ [type]: unix });
 		});
 
-		var params = {
-			token: '1020eb1432094d7257b23e79f695f745',
-			user_id: 1163,
-			server_id: 49,
-			id: 1163,
-		};
-
-		/* thumbnail uploader */
-		var $upload_thumbnail = $('#upload-thumbnail');
-		var $remove_thumbnail = $('#remove-thumbnail');
-		var $preview_thumbnail = $('#preview-thumbnail');
-
-		var uploader = new plupload.Uploader({
-			runtimes: 'html5,flash,silverlight,html4',
-
-			browse_button: 'image-selector-thumbnail', // you can pass in id...
-
-			url: 'http://go.ak-alvin.ndvl:777/upload/attachment',
-
-			flash_swf_url: '../js/Moxie.swf',
-			silverlight_xap_url: '../js/Moxie.xap',
-
-			multipart_params: params,
-			file_data_name: 'fileToUpload',
-
-			filters: {
-				max_file_size: '10mb',
-				mime_types: [{ title: 'Image files', extensions: 'jpg,gif,png' }],
+		/* image upload listener */
+		uploader[0] = setupImageUpload(
+			'image-selector-thumbnail',
+			{
+				$remove_btn: $('#remove-thumbnail'),
+				$preview: $('#preview-thumbnail'),
 			},
-
-			init: {
-				PostInit: function() {
-					$upload_thumbnail.on('click', function() {
-						uploader.start();
-					});
-
-					$remove_thumbnail.on('click', function() {
-						$(this).hide();
-						uploader.files.pop();
-						$preview_thumbnail.html('');
-					});
-				},
-
-				FilesAdded: function(up, files) {
-					$remove_thumbnail.show();
-					$upload_thumbnail.show();
-
-					var file = files[0];
-					var thumbnail_loader = new moxie.image.Image();
-
-					thumbnail_loader.onerror = function(e) {
-						console.log(e);
-					};
-
-					thumbnail_loader.onload = () => {
-						var src = thumbnail_loader.getAsDataURL();
-						convertURIToImageData(src).then(function(blob) {
-							window.URL = window.URL || window.webkitURL;
-							var blobURL = window.URL.createObjectURL(blob);
-
-							$preview_thumbnail.html(
-								`<div class="loading-bar" style="height: 20px; background: white; position: absolute;"></div><img src="${
-									blobURL
-								}" />`,
-							);
-
-							currentState.setState({ thumbnailImageURL: blobURL });
-						});
-					};
-
-					thumbnail_loader.load(file.getSource());
-				},
-
-				UploadProgress: function(up, file) {
-					var $preview_loading_bar = $preview_thumbnail.find('.loading-bar');
-
-					$preview_loading_bar.text(file.percent + '%');
-
-					$preview_loading_bar.css({ width: `${file.percent}%` });
-				},
-
-				FileUploaded: function(uploader, file, info) {
-					$upload_thumbnail.hide();
-					var info = JSON.parse(info.response);
-
-					currentState.setState({ thumbnailImageURL: info.pic_src });
-				},
-
-				Error: function(up, err) {
-					console.log('Error #' + err.code + ': ' + err.message);
-				},
+			function(url) {
+				currentState.setState({ thumbnailImageURL: url });
 			},
-		});
-
-		uploader.init();
-
-		/* END of event listeners for inputs */
+			false,
+		);
 
 		$('#section_type_select').on('change', function() {
 			var $option = $(this).find('option:selected');
@@ -232,46 +160,18 @@
 			currentState.setState({ section: value });
 			setupContent(value);
 		});
-	}
-
-	function convertURIToImageData(URI) {
-		return new Promise(function(resolve, reject) {
-			if (URI == null) return reject();
-			var canvas = document.createElement('canvas'),
-				context = canvas.getContext('2d'),
-				image = new Image();
-			image.addEventListener(
-				'load',
-				function() {
-					canvas.width = image.width;
-					canvas.height = image.height;
-					context.drawImage(image, 0, 0, canvas.width, canvas.height);
-					canvas.toBlob(
-						function(blob) {
-							resolve(blob);
-						},
-						'image/jpeg',
-						1,
-					);
-				},
-				false,
-			);
-			image.src = URI;
-		});
+		/* END of event listeners for inputs */
 	}
 
 	function setupContent(type = 0) {
 		switch (type) {
 			case '1':
-				setUploadedImage('foryou');
 				html = compileHTML('For You');
 				break;
 			case '2':
-				setUploadedImage('promo');
 				html = compileHTML('Promo');
 				break;
 			case '3':
-				setUploadedImage('insight');
 				html = compileHTML('Insight');
 				break;
 			case '4':
@@ -288,7 +188,6 @@
 	function setupFormContent() {
 		setupPreview();
 		setupTinyMCE();
-		setupImageUploaderContent();
 
 		/* BEGIN event listeners for input */
 		var $current_form = $('#form-spec-2');
@@ -296,6 +195,8 @@
 		var $button_selection = $current_form.find('.buttons-radio');
 
 		var $submit = $current_form.find('#submit');
+
+		var { section } = currentState.getState();
 
 		$promo_input.off().on('keyup', function(e) {
 			var promo_code = $(this).val();
@@ -314,9 +215,47 @@
 			currentState.setState({ button_type });
 		});
 
-		$submit.off().on('click', function(e) {
-			e.preventDefault();
-			submitUploadImage($('#image-selector-desktop'));
+		/* image upload listener */
+		uploader[1] = setupImageUpload(
+			'image-selector-banner',
+			{
+				$remove_btn: $('#remove-banner'),
+				$preview: $('#preview-banner'),
+			},
+			function(url) {
+				currentState.setState({ bannerImageDesktopURL: url });
+				html_editing = Object.assign({}, html_editing, { banner: { url } });
+			},
+			false,
+		);
+
+		uploader[2] = setupImageUpload(
+			'image-selector-content',
+			{
+				$remove_btn: $('#remove-content'),
+				$preview: $('#preview-content'),
+			},
+			function(url) {
+				var { contentImagesURL } = currentState.getState();
+				var { content_images } = html_editing;
+
+				contentImagesURL.push(url);
+				currentState.setState({ contentImagesURL });
+
+				content_images.push({ url });
+				html_editing = Object.assign({}, html_editing, { content_images });
+			},
+			true,
+		);
+
+		$submit.on('click', function() {
+			/* clear temporary url */
+			currentState.setState({ contentImagesURL: [] });
+			html_editing = Object.assign({}, html_editing, { content_images: [] });
+
+			uploader.map(function(u) {
+				u.start();
+			});
 		});
 		/* BEGIN event listeners for input */
 	}
@@ -385,39 +324,9 @@
 		tinymce.init(Object.assign({}, tinymce_view, tinymce_settings_2));
 	}
 
-	function setupIframe() {
-		var $iframe = $('#preview-mce');
-		var $iframe_content = $iframe.contents();
-		var addCSS = function(href) {
-			$iframe_content.find('head').append(
-				$('<link />', {
-					rel: 'stylesheet',
-					href,
-					type: 'text/css',
-				}),
-			);
-		};
+	/* End of functions for setup forms */
 
-		addCSS('./preview.css');
-		addCSS('http://ak-alvin.ndvl/css/dv3-bootstrap-short.css');
-		addCSS('http://ak-alvin.ndvl/css/dv3-global-short.css');
-		addCSS('http://ak-alvin.ndvl/css/dv3-new-button.css');
-
-		$iframe_content.find('body').html(`
-        <div class="maincontent-admin maincontent-admin--transparent">
-            <h3 class="fs-16 fw-600 mt-5">Info Penjual</h3>
-            <div class="maincontent-container">
-                <div class="pb-15 pt-5 ">
-                    <a class="backto-infolist" href="index.html">
-                        <i class="icon svg-chevron-left vertical-middle"></i>
-                        <span class="fs-12 fw-600 vertical-middle">Kembali</span>
-                    </a>
-                    <div id='content-iframe'></div>
-                </div>
-            </div>
-        </div>
-    `);
-	}
+	/* Start of functions for html content processing */
 
 	var clearHTML = (function() {
 		return {
@@ -538,61 +447,61 @@
 		};
 	}
 
-	function setUploadedImage(form) {
-		var show_rem_btn = function() {
-			$('.remove-banner-image')
-				.off()
-				.on('click', function() {
-					$(this)
-						.parent()
-						.find('input')
-						.val('');
-					html_editing = Object.assign({}, html_editing, {
-						banner: { desktop: '' },
-					});
-					$(this).hide();
-				})
-				.show();
-		};
+	function processEditContent(html) {
+		var header_reg = new RegExp(
+				'<content-header hidden>(.+)</content-header>',
+				'i',
+			),
+			header_content = header_reg.exec(html),
+			header_content = header_content ? JSON.parse(header_content[1]) : {};
 
-		$('#image-selector-desktop').on('change', function(e) {
-			var src = e.originalEvent.srcElement.files[0];
-			processImageToData(src);
-			show_rem_btn();
-		});
-	}
+		var title_reg = new RegExp(
+				'<content-title hidden>(.+)</content-title>',
+				'i',
+			),
+			title_content = title_reg.exec(html),
+			title_content = title_content ? title_content[1] : '';
 
-	function processImageToData(file, type = 0) {
-		if (!/image/i.test(file.type)) {
-			alert('File ' + file.name + ' is not an image.');
-			return false;
-		}
+		var text_reg = new RegExp('<content-text hidden>(.+)</content-text>', 'i'),
+			text_content = text_reg.exec(html),
+			text_content = text_content ? text_content[1] : '';
 
-		var reader = new FileReader();
-		reader.readAsArrayBuffer(file);
+		var promo_reg = new RegExp(
+				'<content-promo hidden>(.+)</content-promo>',
+				'i',
+			),
+			promo_content = promo_reg.exec(html),
+			promo_content = promo_content ? promo_content[1] : '';
 
-		reader.onload = function(event) {
-			var blob = new Blob([event.target.result]);
-			window.URL = window.URL || window.webkitURL;
-			var blobURL = window.URL.createObjectURL(blob);
+		var images_reg = new RegExp(
+				'<content-images hidden>(.+)</content-images>',
+				'i',
+			),
+			images_content = images_reg.exec(html),
+			images_content = images_content ? JSON.parse(images_content[1]) : {};
 
-			if (type == 0) {
-				currentState.setState({ bannerImageDesktopURL: blobURL });
-				html_editing = Object.assign({}, html_editing, {
-					banner: { url: blobURL },
-				});
-			} else {
-				var { content_images } = html_editing;
-				content_images.push({
-					url: blobURL,
-				});
+		var footnote_reg = new RegExp(
+				'<content-footnote hidden>(.+)</content-footnote>',
+				'i',
+			),
+			footnote_content = footnote_reg.exec(html),
+			footnote_content = footnote_content ? footnote_content[1] : '';
 
-				currentState.setState({ contentImagesURL: content_images });
+		var buttons_reg = new RegExp(
+				'<content-button hidden>(.+)</content-button>',
+				'i',
+			),
+			button_content = buttons_reg.exec(html),
+			button_content = button_content ? JSON.parse(button_content[1]) : {};
 
-				html_editing = Object.assign({}, html_editing, {
-					content_images,
-				});
-			}
+		return {
+			header: header_content,
+			title: title_content,
+			text: text_content,
+			promo: promo_content,
+			images: images_content,
+			footnote: footnote_content,
+			buttons: button_content,
 		};
 	}
 
@@ -774,6 +683,10 @@
 		}
 	}
 
+	/* End of functions for html content processing */
+
+	/* Start of functions for setup previews */
+
 	function setupPreview() {
 		setupIframe();
 		var $iframe = $('#preview-mce');
@@ -785,8 +698,46 @@
 			var buttons = processButton(state.button_type);
 			html_editing = Object.assign({}, html_editing, { buttons });
 
-			setIframeContent($iframe_content, html(html_editing));
+			var content = html(html_editing);
+
+			currentState.setState({ content });
+			setIframeContent($iframe_content, content);
 		});
+	}
+
+	function setupIframe() {
+		var $iframe = $('#preview-mce');
+		var $iframe_content = $iframe.contents();
+
+		var addCSS = function(href) {
+			$iframe_content.find('head').append(
+				$('<link />', {
+					rel: 'stylesheet',
+					href,
+					type: 'text/css',
+				}),
+			);
+		};
+
+		addCSS('./preview.css');
+		addCSS('http://ak-alvin.ndvl/css/dv3-bootstrap-short.css');
+		addCSS('http://ak-alvin.ndvl/css/dv3-global-short.css');
+		addCSS('http://ak-alvin.ndvl/css/dv3-new-button.css');
+
+		$iframe_content.find('body').html(`
+        <div class="maincontent-admin maincontent-admin--transparent">
+            <h3 class="fs-16 fw-600 mt-5">Info Penjual</h3>
+            <div class="maincontent-container">
+                <div class="pb-15 pt-5 ">
+                    <a class="backto-infolist" href="index.html">
+                        <i class="icon svg-chevron-left vertical-middle"></i>
+                        <span class="fs-12 fw-600 vertical-middle">Kembali</span>
+                    </a>
+                    <div id='content-iframe'></div>
+                </div>
+            </div>
+        </div>
+    `);
 	}
 
 	function setIframeContent($component, html) {
@@ -806,213 +757,146 @@
 		$component.html(html.replace('%date_time%', date));
 	}
 
-	function processEditContent(html) {
-		var header_reg = new RegExp(
-				'<content-header hidden>(.+)</content-header>',
-				'i',
-			),
-			header_content = header_reg.exec(html),
-			header_content = header_content ? JSON.parse(header_content[1]) : {};
+	/* End of functions for setup previews */
 
-		var title_reg = new RegExp(
-				'<content-title hidden>(.+)</content-title>',
-				'i',
-			),
-			title_content = title_reg.exec(html),
-			title_content = title_content ? title_content[1] : '';
+	/* Start of functions for image processing and upload */
 
-		var text_reg = new RegExp('<content-text hidden>(.+)</content-text>', 'i'),
-			text_content = text_reg.exec(html),
-			text_content = text_content ? text_content[1] : '';
+	function setupImageUpload(
+		browse_button = '',
+		buttons = {},
+		afterFileURLReceived = function() {},
+		multipleFiles = false, // false = single upload, true = multipleupload,
+	) {
+		var { $remove_btn, $preview } = buttons;
+		var $choose_btn = $('#' + browse_button);
 
-		var promo_reg = new RegExp(
-				'<content-promo hidden>(.+)</content-promo>',
-				'i',
-			),
-			promo_content = promo_reg.exec(html),
-			promo_content = promo_content ? promo_content[1] : '';
-
-		var images_reg = new RegExp(
-				'<content-images hidden>(.+)</content-images>',
-				'i',
-			),
-			images_content = images_reg.exec(html),
-			images_content = images_content ? JSON.parse(images_content[1]) : {};
-
-		var footnote_reg = new RegExp(
-				'<content-footnote hidden>(.+)</content-footnote>',
-				'i',
-			),
-			footnote_content = footnote_reg.exec(html),
-			footnote_content = footnote_content ? footnote_content[1] : '';
-
-		var buttons_reg = new RegExp(
-				'<content-button hidden>(.+)</content-button>',
-				'i',
-			),
-			button_content = buttons_reg.exec(html),
-			button_content = button_content ? JSON.parse(button_content[1]) : {};
-
-		return {
-			header: header_content,
-			title: title_content,
-			text: text_content,
-			promo: promo_content,
-			images: images_content,
-			footnote: footnote_content,
-			buttons: button_content,
+		var params = {
+			token: '1020eb1432094d7257b23e79f695f745',
+			user_id: 1163,
+			server_id: 49,
+			id: 1163,
 		};
-	}
 
-	function setupImageUploaderContent() {
-		// Change this to the location of your server-side upload handler:
-		var url =
-				window.location.hostname === 'blueimp.github.io'
-					? '//jquery-file-upload.appspot.com/'
-					: 'server/php/',
-			uploadButton = $('<button/>')
-				.addClass('btn btn-primary')
-				.prop('disabled', true)
-				.text('Processing...')
-				.on('click', function() {
-					var $this = $(this),
-						data = $this.data();
-					$this
-						.off('click')
-						.text('Abort')
-						.on('click', function() {
-							$this.remove();
-							data.abort();
-						});
-					data.submit().always(function() {
-						$this.remove();
+		return new plupload.Uploader({
+			runtimes: 'html5,flash,silverlight,html4',
+
+			browse_button,
+
+			url: 'http://go.ak-alvin.ndvl:777/upload/attachment',
+
+			flash_swf_url: '../js/Moxie.swf',
+			silverlight_xap_url: '../js/Moxie.xap',
+
+			multipart_params: params,
+			file_data_name: 'fileToUpload',
+			multiple_queues: multipleFiles,
+
+			filters: {
+				max_file_size: '10mb',
+				mime_types: [{ title: 'Image files', extensions: 'jpg,gif,png' }],
+			},
+
+			init: {
+				PostInit: function(uploader) {
+					$remove_btn.on('click', function() {
+						$(this).hide();
+
+						uploader.removeFile(uploader.files[0]);
+
+						$preview.html('');
 					});
-				});
-		$('#fileupload')
-			.fileupload({
-				url: url,
-				dataType: 'json',
-				autoUpload: false,
-				acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-				maxFileSize: 99999000,
-				// Enable image resizing, except for Android and Opera,
-				// which actually support image resizing, but fail to
-				// send Blob objects via XHR requests:
-				disableImageResize: /Android(?!.*Chrome)|Opera/.test(
-					window.navigator.userAgent,
-				),
-				previewMaxWidth: 500,
-				previewMaxHeight: 300,
-				previewCrop: false,
-			})
-			.on('fileuploadadd', function(e, data) {
-				processImageToData(data.originalFiles[0], 1);
-				data.context = $('<div/>').appendTo('#files');
-				$.each(data.files, function(index, file) {
-					var node = $('<p/>').append($('<span/>').text(file.name));
-					if (!index) {
-						node.append('<br>').append(uploadButton.clone(true).data(data));
-					}
-					node.appendTo(data.context);
-				});
-			})
-			.on('fileuploadprocessalways', function(e, data) {
-				var index = data.index,
-					file = data.files[index],
-					node = $(data.context.children()[index]);
-				if (file.preview) {
-					node.prepend('<br>').prepend(file.preview);
-				}
-				if (file.error) {
-					node
-						.append('<br>')
-						.append($('<span class="text-danger"/>').text(file.error));
-				}
-				if (index + 1 === data.files.length) {
-					data.context
-						.find('button')
-						.text('Upload')
-						.prop('disabled', !!data.files.error);
-				}
-			})
-			.on('fileuploadprogressall', function(e, data) {
-				var progress = parseInt(data.loaded / data.total * 100, 10);
-				$('#progress .progress-bar').css('width', progress + '%');
-			})
-			.on('fileuploaddone', function(e, data) {
-				$.each(data.result.files, function(index, file) {
-					if (file.url) {
-						var link = $('<a>')
-							.attr('target', '_blank')
-							.prop('href', file.url);
-						$(data.context.children()[index]).wrap(link);
-					} else if (file.error) {
-						var error = $('<span class="text-danger"/>').text(file.error);
-						$(data.context.children()[index])
-							.append('<br>')
-							.append(error);
-					}
-				});
-			})
-			.on('fileuploadfail', function(e, data) {
-				$.each(data.files, function(index) {
-					var error = $('<span class="text-danger"/>').text(
-						'File upload failed.',
-					);
-					$(data.context.children()[index])
-						.append('<br>')
-						.append(error);
-				});
-			})
-			.prop('disabled', !$.support.fileInput)
-			.parent()
-			.addClass($.support.fileInput ? undefined : 'disabled');
-	}
-
-	function submitUploadImage(src) {
-		/* show progress bar */
-		$('#progress').show();
-
-		var img = src.prop('files')[0];
-
-		var dataUpload = new FormData();
-		dataUpload.append('name', img.name);
-		dataUpload.append('user_id', 32464);
-		dataUpload.append('origin', 'sellerinfo');
-		dataUpload.append('fileToUpload', img);
-
-		/*
-			URL       = "https://up-staging.tokopedia.net/upload/attachment"
-			ImageCDN  = "https://ecs7.tokopedia.net/img/"
-		*/
-		$.ajax({
-			url: 'https://up-staging.tokopedia.net/upload/attachment',
-			// type: 'OPTIONS',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-				'Access-Control-Allow-Origin': 'https://up-staging.tokopedia.net',
-			},
-			beforeSend: function(request) {
-				request.setRequestHeader(
-					'Access-Control-Request-Headers',
-					'content-disposition',
-				);
-			},
-		}).then(
-			$.ajax({
-				url: 'https://up-staging.tokopedia.net/upload/attachment',
-				global: false,
-				type: 'POST',
-				data: dataUpload,
-				contentType: false,
-				processData: false,
-				cache: false,
-				success: function(result) {
-					console.log(result);
 				},
-			}),
-		);
+
+				FilesAdded: function(up, files) {
+					$remove_btn.show();
+
+					if (!multipleFiles) $choose_btn.attr('disabled', true);
+
+					console.log(files);
+
+					files.map(function(file) {
+						var thumbnail_loader = new moxie.image.Image();
+
+						thumbnail_loader.onerror = function(e) {
+							console.log(e);
+						};
+
+						thumbnail_loader.onload = () => {
+							var src = thumbnail_loader.getAsDataURL();
+							convertURIToImageData(src).then(function(blob) {
+								window.URL = window.URL || window.webkitURL;
+								var blobURL = window.URL.createObjectURL(blob);
+
+								var element = `<div id="${
+									file.id
+								}"><div class="loading-bar" style="height: 20px; background: white; position: absolute;"></div><img src="${
+									blobURL
+								}" /></div>`;
+
+								if (!multipleFiles) $preview.html(element);
+								else $preview.append(element);
+
+								afterFileURLReceived(blobURL);
+							});
+						};
+
+						thumbnail_loader.load(file.getSource());
+					});
+				},
+
+				FilesRemoved: function(up, files) {
+					if (!multipleFiles) $choose_btn.attr('disabled', false);
+				},
+
+				UploadProgress: function(up, file) {
+					var $preview_loading_bar = $('#' + file.id).find('.loading-bar');
+
+					$preview_loading_bar.text(file.percent + '%');
+
+					$preview_loading_bar.css({ width: `${file.percent}%` });
+				},
+
+				FileUploaded: function(uploader, file, info) {
+					var info = JSON.parse(info.response);
+
+					afterFileURLReceived(info.pic_src);
+				},
+
+				Error: function(up, err) {
+					console.log('Error #' + err.code + ': ' + err.message);
+				},
+			},
+		});
 	}
+
+	function convertURIToImageData(URI) {
+		return new Promise(function(resolve, reject) {
+			if (URI == null) return reject();
+			var canvas = document.createElement('canvas'),
+				context = canvas.getContext('2d'),
+				image = new Image();
+			image.addEventListener(
+				'load',
+				function() {
+					canvas.width = image.width;
+					canvas.height = image.height;
+					context.drawImage(image, 0, 0, canvas.width, canvas.height);
+					canvas.toBlob(
+						function(blob) {
+							resolve(blob);
+						},
+						'image/jpeg',
+						1,
+					);
+				},
+				false,
+			);
+			image.src = URI;
+		});
+	}
+
+	/* End of functions for image processing and upload */
+
 	/* Start of Object State to manage state of the page*/
 	function State(state) {
 		this.state = state;
